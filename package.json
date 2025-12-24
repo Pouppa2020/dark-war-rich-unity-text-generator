@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Dark War Text Generator",
   "scripts": {
-    "build": "echo 'No build needed for static site'"
+    "build": "echo 'Static site - no build needed'",
+    "deploy": "npx wrangler deploy"
   }
 }
 
