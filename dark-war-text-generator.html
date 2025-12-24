@@ -1,0 +1,2874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark War Text Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ffffff;
+            font-size: 2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #2d2d44;
+            border: 2px solid #444;
+            border-radius: 8px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 14px;
+            min-height: 48px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            background: #2d2d44;
+            color: #ffffff;
+            font-size: 16px;
+            touch-action: manipulation;
+        }
+        
+        /* Hide spinner controls on number inputs */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        /* Specific styling for fontSize input to ensure two-digit numbers are visible */
+        #fontSize {
+            padding-right: 14px !important;
+            padding-left: 14px !important;
+            text-align: center !important;
+            font-size: 20px !important;
+            font-weight: 600 !important;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #6c5ce7;
+        }
+
+        #message {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #444;
+            border-radius: 6px;
+            background: #1e1e2e;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 60px;
+            word-wrap: break-word;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        #message:focus {
+            outline: none;
+            border-color: #6c5ce7;
+        }
+
+        .formatting-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .formatting-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .format-btn {
+            padding: 14px 24px;
+            min-height: 48px;
+            min-width: 48px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            background: #2d2d44;
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        .format-btn:hover {
+            background: #3d3d54;
+            border-color: #6c5ce7;
+        }
+
+        .format-btn.active {
+            background: #6c5ce7;
+            border-color: #6c5ce7;
+        }
+
+        select {
+            padding: 14px 12px;
+            min-height: 48px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            background: #2d2d44;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #6c5ce7;
+        }
+
+        .color-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .color-controls .rgb-slider {
+            margin-right: 0;
+        }
+
+        .color-controls .color-preview {
+            margin-left: 0;
+        }
+
+
+        .rgb-slider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .rgb-slider label {
+            min-width: 20px;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .rgb-slider span {
+            min-width: 40px;
+            text-align: right;
+            flex-shrink: 0;
+            padding-right: 5px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #444;
+            outline: none;
+            -webkit-appearance: none;
+            min-width: 80px;
+            touch-action: manipulation;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #6c5ce7;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #6c5ce7;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-preview {
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            min-height: 60px;
+            border-radius: 8px;
+            border: 2px solid #444;
+            background: rgb(255, 255, 255);
+            flex-shrink: 0;
+            margin-left: 10px;
+            touch-action: manipulation;
+        }
+
+        .section {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #2d2d44;
+            border: 2px solid #444;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .section h3 {
+            margin-bottom: 15px;
+            margin-top: 0;
+            color: #e0e0e0;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .section:not(.collapsed) h3 {
+            justify-content: center;
+        }
+
+        .section:not(.collapsed) .section-toggle {
+            position: absolute;
+            right: 0;
+        }
+
+        .section-always-open h3 {
+            cursor: default;
+        }
+
+        .section.collapsed h3 {
+            margin-bottom: 0;
+        }
+
+        .section h3:hover {
+            color: #ffffff;
+        }
+
+        .section-toggle {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            margin-left: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1;
+            min-width: 32px;
+            min-height: 32px;
+            touch-action: manipulation;
+        }
+
+        .section.collapsed .section-toggle::before {
+            content: '➕';
+        }
+
+        .section:not(.collapsed) .section-toggle::before {
+            content: '➖';
+        }
+
+        .section-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease, padding 0.3s ease;
+            max-height: 5000px;
+            opacity: 1;
+        }
+
+        .section.collapsed .section-content {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .gradient-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .gradient-btn, .generate-btn {
+            padding: 16px 24px;
+            min-height: 52px;
+            border: 2px solid #6c5ce7;
+            border-radius: 8px;
+            background: #6c5ce7;
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        .gradient-btn:hover, .generate-btn:hover {
+            background: #5a4fd6;
+        }
+
+        .gradient-btn:active, .generate-btn:active {
+            transform: scale(0.98);
+        }
+
+
+        .result-group {
+            margin-top: 20px;
+            padding: 20px;
+            background: #2d2d44;
+            border: 2px solid #444;
+            border-radius: 8px;
+        }
+
+        .result-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        #result {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            background: #1e1e2e;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            min-height: 80px;
+            word-wrap: break-word;
+            touch-action: manipulation;
+        }
+        
+        textarea {
+            font-size: 16px;
+            padding: 14px;
+            min-height: 48px;
+            touch-action: manipulation;
+        }
+
+        .copy-btn {
+            padding: 16px 24px;
+            min-height: 52px;
+            border: 2px solid #6c5ce7;
+            border-radius: 8px;
+            background: #6c5ce7;
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        .copy-btn:hover {
+            background: #5a4fd6;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+
+        .preview-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #2d2d44;
+            border-radius: 8px;
+            border: 2px solid #444;
+        }
+
+        #preview {
+            padding: 20px;
+            background: linear-gradient(135deg, #E8DCC6 0%, #D4C5A9 100%);
+            border-radius: 20px;
+            width: 720px;
+            height: 120px;
+            max-width: 100%;
+            font-family: Arial, 'Liberation Sans', sans-serif;
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            border: 2px solid #C4B59A;
+            color: #FFFFFF;
+            font-weight: 400;
+            position: relative;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-size: 26px;
+            -webkit-text-stroke: 4px black;
+            text-stroke: 4px black;
+            paint-order: stroke fill;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        #preview::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #preview::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        
+        #preview::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        #preview::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        #preview * {
+            font-family: Arial, 'Liberation Sans', sans-serif !important;
+            font-weight: 700 !important;
+            paint-order: stroke fill;
+        }
+
+        #preview strong {
+            font-weight: bold !important;
+        }
+
+        #preview span[style*="font-size"] {
+            vertical-align: baseline;
+        }
+
+        .align-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+        
+        .align-btn svg {
+            display: block;
+        }
+
+        .custom-gradient-container {
+            margin-top: 15px;
+        }
+
+        .gradient-preview-bar {
+            width: 100%;
+            height: 40px;
+            border-radius: 6px;
+            border: 2px solid #444;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #FF0000, #0000FF);
+        }
+
+        .color-stops-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .color-stop-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            min-height: 48px;
+            background: #2d2d44;
+            border: 2px solid #444;
+            border-radius: 8px;
+        }
+
+        .color-stop-picker {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #ff0000;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .color-stop-picker::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-stop-picker::-webkit-color-swatch {
+            border: none;
+            border-radius: 2px;
+        }
+
+        .color-stop-picker::-moz-color-swatch {
+            border: none;
+            border-radius: 2px;
+        }
+
+        .color-stop-remove {
+            padding: 10px 16px;
+            min-width: 44px;
+            min-height: 44px;
+            background: #ff4444;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            touch-action: manipulation;
+        }
+
+        .color-stop-remove:hover {
+            background: #cc0000;
+        }
+
+        .custom-gradient-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .color-picker-popup {
+            position: fixed;
+            background: #2d2d44;
+            z-index: 1000;
+            border: 2px solid #444;
+            border-radius: 6px;
+            padding: 15px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+
+        .color-picker-popup label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+
+        .color-picker-main {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .color-picker-visual {
+            flex: 1;
+        }
+
+        .color-picker-popup input[type="color"] {
+            width: 100%;
+            height: 100px;
+            border: 2px solid #444;
+            border-radius: 6px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #1e1e2e;
+            margin-bottom: 10px;
+        }
+
+        .color-picker-popup input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-picker-popup input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 4px;
+        }
+
+        .color-picker-controls {
+            flex: 1;
+        }
+
+        .color-picker-rgb {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .color-picker-rgb-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-picker-rgb-item label {
+            min-width: 20px;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .color-picker-rgb-item input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #444;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .color-picker-rgb-item input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #6c5ce7;
+            cursor: pointer;
+        }
+
+        .color-picker-rgb-item input[type="number"] {
+            width: 80px;
+            padding: 12px;
+            min-height: 48px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #1e1e2e;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .color-picker-hex {
+            margin-top: 10px;
+        }
+
+        .color-picker-hex input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            background: #1e1e2e;
+            color: #ffffff;
+            text-align: center;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .color-picker-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .color-picker-actions button {
+            flex: 1;
+            padding: 14px 24px;
+            min-height: 48px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            background: #2d2d44;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 16px;
+            touch-action: manipulation;
+        }
+
+        .color-picker-actions button:hover {
+            background: #3d3d54;
+        }
+
+        .color-picker-actions .btn-primary {
+            background: #6c5ce7;
+            border-color: #6c5ce7;
+        }
+
+        .color-picker-actions .btn-primary:hover {
+            background: #5a4fd6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dark War Text Generator</h1>
+        
+        <form id="textForm" onsubmit="return false;">
+            <div class="section section-always-open">
+                <h3>Message</h3>
+                <div class="section-content">
+                    <textarea id="message" placeholder="Paste HTML or plain text...">Aliens are real</textarea>
+                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                        <button type="button" class="gradient-btn" id="collapseAllBtn" style="flex: 1;">Collapse All</button>
+                        <button type="button" class="gradient-btn" id="expandAllBtn" style="flex: 1;">Expand All</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section collapsed">
+                <h3>Formatting<span class="section-toggle"></span></h3>
+                <div class="section-content">
+                    <div class="formatting-controls">
+                    <div>
+                        <div class="formatting-buttons">
+                            <button type="button" class="format-btn" id="boldBtn" data-format="b">B</button>
+                            <button type="button" class="format-btn" id="italicBtn" data-format="i">I</button>
+                            <button type="button" class="format-btn" id="underlineBtn" data-format="u">U</button>
+                        </div>
+                    </div>
+                    <div style="min-width: 120px; flex: 0 0 auto;">
+                        <input type="number" id="fontSize" list="fontSizeOptions" placeholder="26" min="1" max="100" step="1" style="width: 100%; min-width: 100px; min-height: 48px; background: #2a2a2a; color: white; border: 2px solid #444; border-radius: 8px;">
+                        <datalist id="fontSizeOptions">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="25">25</option>
+                            <option value="26">26 (Standard)</option>
+                            <option value="30">30</option>
+                            <option value="35">35</option>
+                            <option value="40">40</option>
+                            <option value="45">45</option>
+                            <option value="50">50</option>
+                            <option value="55">55</option>
+                            <option value="60">60</option>
+                            <option value="65">65</option>
+                            <option value="70">70</option>
+                            <option value="75">75</option>
+                            <option value="80">80</option>
+                            <option value="85">85</option>
+                            <option value="90">90</option>
+                            <option value="95">95</option>
+                            <option value="100">100</option>
+                        </datalist>
+                    </div>
+                    <div>
+                        <div class="formatting-buttons">
+                            <button type="button" class="format-btn align-btn" id="alignLeftBtn" data-align="left" title="Left">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <line x1="2" y1="8" x2="10" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <line x1="2" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <button type="button" class="format-btn align-btn" id="alignCenterBtn" data-align="center" title="Center">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="1" y1="4" x2="15" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <line x1="3" y1="8" x2="13" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <line x1="4" y1="12" x2="12" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <button type="button" class="format-btn align-btn" id="alignRightBtn" data-align="right" title="Right">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <line x1="6" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <line x1="8" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section collapsed">
+                <h3>Font Color<span class="section-toggle"></span></h3>
+                <div class="section-content">
+                    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; position: relative;">
+                    <div class="color-preview" id="colorPreview" style="width: 60px; height: 60px;"></div>
+                    <button type="button" class="gradient-btn" id="singleColorPickerBtn" style="flex: 1; min-width: 200px;">+ Add Color</button>
+                    <button type="button" class="gradient-btn" id="clearSingleColorBtn" style="flex: 1; min-width: 200px;">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section collapsed">
+                <h3>Gradients<span class="section-toggle"></span></h3>
+                <div class="section-content">
+                    <div style="padding: 16px; background: #2d2d44; border: 2px solid #444; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="font-size: 16px; font-weight: 600; color: #e0e0e0; margin-bottom: 12px;">Choose predefined</div>
+                        <select id="gradientSelect" style="width: 100%; padding: 14px; min-height: 48px; background: #2a2a2a; color: white; border: 2px solid #444; border-radius: 8px; font-size: 16px;">
+                            <option value="">-- Select a gradient --</option>
+                        </select>
+                    </div>
+
+                    <div style="text-align: center; margin: 10px 0; font-size: 16px; font-weight: 500; color: #e0e0e0;">or</div>
+
+                    <div style="padding: 16px; background: #2d2d44; border: 2px solid #444; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="font-size: 16px; font-weight: 600; color: #e0e0e0; margin-bottom: 12px;">Generate Randomly</div>
+                        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <label for="randomColorCount" style="margin: 0; white-space: nowrap; color: #e0e0e0; font-size: 16px;">Number of colors:</label>
+                            <input type="number" id="randomColorCount" min="1" max="7" value="2" style="width: 80px; padding: 14px; min-height: 48px; border: 2px solid #444; border-radius: 8px; background: #1e1e2e; color: #ffffff; text-align: center; font-size: 16px;">
+                            <button type="button" class="gradient-btn" id="randomGradientBtn" style="flex: 1; min-width: 200px;">🎲 Generate Random</button>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin: 10px 0; font-size: 16px; font-weight: 500; color: #e0e0e0;">or</div>
+
+                    <div style="padding: 16px; background: #2d2d44; border: 2px solid #444; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="font-size: 16px; font-weight: 600; color: #e0e0e0; margin-bottom: 12px;">Create Manually</div>
+                        <div class="color-stops-container" id="colorStopsContainer" style="margin-bottom: 15px;">
+                            <!-- Color stops will be added here dynamically -->
+                        </div>
+                        <div class="custom-gradient-controls">
+                            <div style="display: flex; align-items: center; gap: 15px; width: 100%;">
+                                <button type="button" class="gradient-btn" id="addColorStopBtn" style="flex: 1;">+ Add Color</button>
+                                <button type="button" class="gradient-btn" id="clearGradientBtn" style="flex: 1;">Clear</button>
+                            </div>
+                            <div id="errorMessage" style="margin-top: 10px; padding: 8px; background: #ff4444; color: white; border-radius: 4px; display: none; font-size: 12px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="gradient-preview-bar" id="customGradientPreview" style="width: 100%; height: 50px; border-radius: 8px; border: 2px solid #444; margin-top: 20px;"></div>
+                </div>
+            </div>
+
+            <div class="section collapsed">
+                <h3>Background Color<span class="section-toggle"></span></h3>
+                <div class="section-content">
+                    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; position: relative;">
+                    <div class="color-preview" id="bgColorPreview" style="background: transparent; border: 2px dashed #666; width: 60px; height: 60px;"></div>
+                    <button type="button" class="gradient-btn" id="bgColorPickerBtn" style="flex: 1; min-width: 200px;">+ Add Color</button>
+                    <button type="button" class="gradient-btn" id="clearBgColorBtn" style="flex: 1; min-width: 200px;">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section collapsed">
+                <h3>Letter Rotation<span class="section-toggle"></span></h3>
+                <div class="section-content">
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <label style="min-width: 80px; margin: 0;">Mode:</label>
+                            <select id="rotationMode" style="flex: 1; padding: 14px; min-height: 48px; background: #2a2a2a; color: white; border: 2px solid #444; border-radius: 8px; font-size: 16px;">
+                                <option value="">Disabled</option>
+                                <option value="all">Apply to all letters</option>
+                                <option value="alternating">Alternating</option>
+                                <option value="random">Random per letter</option>
+                                <option value="letterByLetter">Letter by letter</option>
+                            </select>
+                            <button type="button" class="gradient-btn" id="resetRotationBtn" style="min-width: 120px;">Clear</button>
+                        </div>
+                        <div id="singleRotationControls" style="display: none; flex-direction: column; gap: 15px;">
+                            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                                <label style="min-width: 80px; margin: 0;">Rotation:</label>
+                                <input type="range" id="rotationSlider" min="0" max="360" value="0" step="1" style="flex: 1; min-width: 150px;">
+                                <input type="number" id="rotationInput" min="0" max="360" value="0" step="1" style="width: 100px; padding: 14px; min-height: 48px; background: #2a2a2a; color: white; border: 2px solid #444; border-radius: 8px; font-size: 16px; text-align: center;">
+                                <span style="min-width: 30px; text-align: center; font-weight: 500;">°</span>
+                            </div>
+                        </div>
+                        <div id="letterByLetterControls" style="display: none; flex-direction: column; gap: 10px;">
+                            <div id="letterRotationSliders" style="display: flex; flex-direction: column; gap: 12px;">
+                                <!-- Letter-by-letter sliders will be dynamically generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section result-group section-always-open">
+                <h3>Result</h3>
+                <div class="section-content">
+                    <div class="result-container">
+                    <textarea id="result" readonly></textarea>
+                    <button type="button" class="copy-btn" id="copyBtn">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section section-always-open" style="background: #F5EDE0; border-color: #D4C5A9;">
+                <h3 style="color: #5a4a3a;">Preview</h3>
+                <div class="section-content" style="display: flex; justify-content: center;">
+                    <div id="preview"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+        // State
+        const state = {
+            bold: false,
+            italic: false,
+            underline: false,
+            fontSize: '',
+            alignment: '', // 'left', 'center', 'right', or '' for default
+            red: 255,
+            green: 255,
+            blue: 255,
+            bgRed: 0,
+            bgGreen: 0,
+            bgBlue: 0,
+            bgAlpha: 156, // Default alpha (9C in hex = 156)
+            hasBackground: false, // Start with no background (transparent)
+            rotationMode: '', // '', 'all', 'alternating', 'random', 'letterByLetter'
+            rotationValue: 0,
+            letterRotations: [] // Array of rotation values per letter for letterByLetter mode
+        };
+
+        // DOM elements
+        const messageInput = document.getElementById('message');
+        const collapseAllBtn = document.getElementById('collapseAllBtn');
+        const expandAllBtn = document.getElementById('expandAllBtn');
+        const boldBtn = document.getElementById('boldBtn');
+        const italicBtn = document.getElementById('italicBtn');
+        const underlineBtn = document.getElementById('underlineBtn');
+        const fontSizeInput = document.getElementById('fontSize');
+        const alignLeftBtn = document.getElementById('alignLeftBtn');
+        const alignCenterBtn = document.getElementById('alignCenterBtn');
+        const alignRightBtn = document.getElementById('alignRightBtn');
+        const colorPreview = document.getElementById('colorPreview');
+        const singleColorPickerBtn = document.getElementById('singleColorPickerBtn');
+        const clearSingleColorBtn = document.getElementById('clearSingleColorBtn');
+        const bgColorPreview = document.getElementById('bgColorPreview');
+        const bgColorPickerBtn = document.getElementById('bgColorPickerBtn');
+        const clearBgColorBtn = document.getElementById('clearBgColorBtn');
+        const rotationSlider = document.getElementById('rotationSlider');
+        const rotationInput = document.getElementById('rotationInput');
+        const rotationMode = document.getElementById('rotationMode');
+        const resetRotationBtn = document.getElementById('resetRotationBtn');
+        const singleRotationControls = document.getElementById('singleRotationControls');
+        const letterByLetterControls = document.getElementById('letterByLetterControls');
+        const letterRotationSliders = document.getElementById('letterRotationSliders');
+        const gradientSelect = document.getElementById('gradientSelect');
+        const resultTextarea = document.getElementById('result');
+        const copyBtn = document.getElementById('copyBtn');
+        const preview = document.getElementById('preview');
+        const colorStopsContainer = document.getElementById('colorStopsContainer');
+        const addColorStopBtn = document.getElementById('addColorStopBtn');
+        const clearGradientBtn = document.getElementById('clearGradientBtn');
+        const randomGradientBtn = document.getElementById('randomGradientBtn');
+        const randomColorCountInput = document.getElementById('randomColorCount');
+        const customGradientPreview = document.getElementById('customGradientPreview');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        // Custom gradient state
+        let customGradientColors = []; // Default: no colors selected
+        const MAX_COLORS = 7;
+
+        // Formatting button handlers
+        boldBtn.addEventListener('click', () => {
+            state.bold = !state.bold;
+            boldBtn.classList.toggle('active', state.bold);
+            if (messageInput.value) generateAndUpdate();
+        });
+
+        italicBtn.addEventListener('click', () => {
+            state.italic = !state.italic;
+            italicBtn.classList.toggle('active', state.italic);
+            if (messageInput.value) generateAndUpdate();
+        });
+
+        underlineBtn.addEventListener('click', () => {
+            state.underline = !state.underline;
+            underlineBtn.classList.toggle('active', state.underline);
+            if (messageInput.value) generateAndUpdate();
+        });
+
+        // Font size handler
+        fontSizeInput.addEventListener('input', (e) => {
+            let value = e.target.value;
+            if (value === '' || value === null) {
+                // Empty value means standard (26)
+                state.fontSize = '';
+            } else {
+                const numValue = parseInt(value);
+                if (numValue >= 1 && numValue <= 100) {
+                    state.fontSize = numValue.toString();
+                } else {
+                    // Invalid value, reset to empty
+                    state.fontSize = '';
+                    e.target.value = '';
+                }
+            }
+            if (messageInput.value) generateAndUpdate();
+        });
+        
+        fontSizeInput.addEventListener('change', (e) => {
+            // Also handle change event for datalist selection
+            let value = e.target.value;
+            if (value === '' || value === null) {
+                state.fontSize = '';
+            } else {
+                const numValue = parseInt(value);
+                if (numValue >= 1 && numValue <= 100) {
+                    state.fontSize = numValue.toString();
+                } else {
+                    state.fontSize = '';
+                    e.target.value = '';
+                }
+            }
+            if (messageInput.value) generateAndUpdate();
+        });
+
+        // Alignment button handlers
+        function setAlignment(align) {
+            // Remove active class from all alignment buttons
+            alignLeftBtn.classList.remove('active');
+            alignCenterBtn.classList.remove('active');
+            alignRightBtn.classList.remove('active');
+            
+            // If clicking the same alignment, deselect it
+            if (state.alignment === align) {
+                state.alignment = '';
+            } else {
+                state.alignment = align;
+                // Add active class to selected button
+                if (align === 'left') alignLeftBtn.classList.add('active');
+                if (align === 'center') alignCenterBtn.classList.add('active');
+                if (align === 'right') alignRightBtn.classList.add('active');
+            }
+
+            // Regenerate code if there's already a result
+            if (resultTextarea.value) {
+                const hasGradient = resultTextarea.value.includes('<color=#') && 
+                    resultTextarea.value.split('<color=').length > 2;
+                
+                if (hasGradient) {
+                    const lastGradient = localStorage.getItem('lastGradient') || 'Rainbow';
+                    if (lastGradient === 'custom') {
+                        const code = generateCustomGradient();
+                        if (code) {
+                            resultTextarea.value = code;
+                            updatePreview(code);
+                        }
+                    } else if (gradients[lastGradient]) {
+                        const code = generateGradient(lastGradient);
+                        resultTextarea.value = code;
+                        updatePreview(code);
+                    }
+                } else {
+                    const code = generateSolidColor();
+                    resultTextarea.value = code;
+                    updatePreview(code);
+                }
+            }
+        }
+
+        alignLeftBtn.addEventListener('click', () => setAlignment('left'));
+        alignCenterBtn.addEventListener('click', () => setAlignment('center'));
+        alignRightBtn.addEventListener('click', () => setAlignment('right'));
+
+        // Single color preview update
+        function updateColorPreview() {
+            const color = `rgb(${state.red}, ${state.green}, ${state.blue})`;
+            colorPreview.style.background = color;
+        }
+
+        // Helper function to generate and update code based on current mode
+        function generateAndUpdate() {
+            if (!messageInput.value) return;
+            
+            // Check if we're in gradient mode or solid color mode
+            const hasGradient = resultTextarea.value.includes('<color=#') && 
+                resultTextarea.value.split('<color=').length > 2;
+            
+            if (hasGradient) {
+                    const lastGradient = localStorage.getItem('lastGradient') || 'Rainbow';
+                    if (lastGradient === 'custom') {
+                        const code = generateCustomGradient();
+                        if (code) {
+                            resultTextarea.value = code;
+                            updatePreview(code);
+                        }
+                    } else if (gradients[lastGradient]) {
+                        const code = generateGradient(lastGradient);
+                        resultTextarea.value = code;
+                        updatePreview(code);
+                    }
+            } else {
+                const code = generateSolidColor();
+                resultTextarea.value = code;
+                updatePreview(code);
+            }
+        }
+
+        // Single color picker button
+        singleColorPickerBtn.addEventListener('click', (e) => {
+            // Remove any existing popup
+            const existingPopup = document.querySelector('.color-picker-popup');
+            if (existingPopup) {
+                existingPopup.remove();
+                return;
+            }
+
+            // Create a popup with enhanced color picker (no alpha for single color)
+            const popup = document.createElement('div');
+            popup.className = 'color-picker-popup';
+
+            const label = document.createElement('label');
+            label.textContent = 'Choose color:';
+            popup.appendChild(label);
+
+            const mainContainer = document.createElement('div');
+            mainContainer.className = 'color-picker-main';
+
+            // Visual color picker (native)
+            const visualContainer = document.createElement('div');
+            visualContainer.className = 'color-picker-visual';
+            const colorPicker = document.createElement('input');
+            colorPicker.type = 'color';
+            const currentHex = rgbToHex(state.red, state.green, state.blue);
+            colorPicker.value = currentHex;
+            visualContainer.appendChild(colorPicker);
+
+            // RGB Controls (no alpha)
+            const controlsContainer = document.createElement('div');
+            controlsContainer.className = 'color-picker-controls';
+
+            const rgbContainer = document.createElement('div');
+            rgbContainer.className = 'color-picker-rgb';
+
+            let currentColor = { r: state.red, g: state.green, b: state.blue };
+
+            function updateColorFromRGB() {
+                const hex = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
+                colorPicker.value = hex;
+                hexInput.value = hex;
+                colorPicker.style.background = hex;
+                // Update preview
+                colorPreview.style.background = `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
+            }
+
+            function updateColorFromHex(hex) {
+                const rgb = hexToRgb(hex);
+                if (rgb) {
+                    currentColor.r = rgb.r;
+                    currentColor.g = rgb.g;
+                    currentColor.b = rgb.b;
+                    redSlider.value = rgb.r;
+                    greenSlider.value = rgb.g;
+                    blueSlider.value = rgb.b;
+                    redValue.value = rgb.r;
+                    greenValue.value = rgb.g;
+                    blueValue.value = rgb.b;
+                    colorPicker.value = hex;
+                    colorPicker.style.background = hex;
+                    updateColorFromRGB();
+                }
+            }
+
+            // Red slider
+            const redItem = document.createElement('div');
+            redItem.className = 'color-picker-rgb-item';
+            const redLabel = document.createElement('label');
+            redLabel.textContent = 'R';
+            const redSlider = document.createElement('input');
+            redSlider.type = 'range';
+            redSlider.min = '0';
+            redSlider.max = '255';
+            redSlider.value = state.red.toString();
+            const redValue = document.createElement('input');
+            redValue.type = 'number';
+            redValue.min = '0';
+            redValue.max = '255';
+            redValue.value = state.red.toString();
+            redSlider.addEventListener('input', (e) => {
+                currentColor.r = parseInt(e.target.value);
+                redValue.value = currentColor.r;
+                updateColorFromRGB();
+            });
+            redValue.addEventListener('input', (e) => {
+                currentColor.r = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+                redSlider.value = currentColor.r;
+                updateColorFromRGB();
+            });
+            redItem.appendChild(redLabel);
+            redItem.appendChild(redSlider);
+            redItem.appendChild(redValue);
+            rgbContainer.appendChild(redItem);
+
+            // Green slider
+            const greenItem = document.createElement('div');
+            greenItem.className = 'color-picker-rgb-item';
+            const greenLabel = document.createElement('label');
+            greenLabel.textContent = 'G';
+            const greenSlider = document.createElement('input');
+            greenSlider.type = 'range';
+            greenSlider.min = '0';
+            greenSlider.max = '255';
+            greenSlider.value = state.green.toString();
+            const greenValue = document.createElement('input');
+            greenValue.type = 'number';
+            greenValue.min = '0';
+            greenValue.max = '255';
+            greenValue.value = state.green.toString();
+            greenSlider.addEventListener('input', (e) => {
+                currentColor.g = parseInt(e.target.value);
+                greenValue.value = currentColor.g;
+                updateColorFromRGB();
+            });
+            greenValue.addEventListener('input', (e) => {
+                currentColor.g = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+                greenSlider.value = currentColor.g;
+                updateColorFromRGB();
+            });
+            greenItem.appendChild(greenLabel);
+            greenItem.appendChild(greenSlider);
+            greenItem.appendChild(greenValue);
+            rgbContainer.appendChild(greenItem);
+
+            // Blue slider
+            const blueItem = document.createElement('div');
+            blueItem.className = 'color-picker-rgb-item';
+            const blueLabel = document.createElement('label');
+            blueLabel.textContent = 'B';
+            const blueSlider = document.createElement('input');
+            blueSlider.type = 'range';
+            blueSlider.min = '0';
+            blueSlider.max = '255';
+            blueSlider.value = state.blue.toString();
+            const blueValue = document.createElement('input');
+            blueValue.type = 'number';
+            blueValue.min = '0';
+            blueValue.max = '255';
+            blueValue.value = state.blue.toString();
+            blueSlider.addEventListener('input', (e) => {
+                currentColor.b = parseInt(e.target.value);
+                blueValue.value = currentColor.b;
+                updateColorFromRGB();
+            });
+            blueValue.addEventListener('input', (e) => {
+                currentColor.b = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+                blueSlider.value = currentColor.b;
+                updateColorFromRGB();
+            });
+            blueItem.appendChild(blueLabel);
+            blueItem.appendChild(blueSlider);
+            blueItem.appendChild(blueValue);
+            rgbContainer.appendChild(blueItem);
+
+            controlsContainer.appendChild(rgbContainer);
+
+            // Hex input
+            const hexContainer = document.createElement('div');
+            hexContainer.className = 'color-picker-hex';
+            const hexLabel = document.createElement('label');
+            hexLabel.textContent = 'Hex:';
+            hexLabel.style.marginBottom = '5px';
+            const hexInput = document.createElement('input');
+            hexInput.type = 'text';
+            hexInput.value = currentHex;
+            hexInput.placeholder = '#FF0000';
+            hexInput.pattern = '^#[0-9A-Fa-f]{6}$';
+            hexInput.addEventListener('input', (e) => {
+                let value = e.target.value.toUpperCase();
+                if (!value.startsWith('#')) {
+                    value = '#' + value;
+                }
+                if (/^#[0-9A-F]{6}$/.test(value)) {
+                    updateColorFromHex(value);
+                }
+                hexInput.value = value;
+            });
+            hexContainer.appendChild(hexLabel);
+            hexContainer.appendChild(hexInput);
+            controlsContainer.appendChild(hexContainer);
+
+            mainContainer.appendChild(visualContainer);
+            mainContainer.appendChild(controlsContainer);
+            popup.appendChild(mainContainer);
+
+            // Action buttons
+            const actionsContainer = document.createElement('div');
+            actionsContainer.className = 'color-picker-actions';
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.addEventListener('click', () => {
+                popup.remove();
+                document.removeEventListener('click', closePopup);
+            });
+
+            const applyBtn = document.createElement('button');
+            applyBtn.className = 'btn-primary';
+            applyBtn.textContent = 'Apply';
+            applyBtn.addEventListener('click', () => {
+                state.red = currentColor.r;
+                state.green = currentColor.g;
+                state.blue = currentColor.b;
+                updateColorPreview();
+                // Clear gradient selection and switch to solid color
+                gradientSelect.value = '';
+                localStorage.setItem('lastGradient', '');
+                if (messageInput.value) {
+                    generateAndUpdate();
+                }
+                popup.remove();
+                document.removeEventListener('click', closePopup);
+            });
+
+            actionsContainer.appendChild(cancelBtn);
+            actionsContainer.appendChild(applyBtn);
+            popup.appendChild(actionsContainer);
+
+            // Update when native color picker changes
+            colorPicker.addEventListener('change', (e) => {
+                updateColorFromHex(e.target.value);
+            });
+
+            // Close popup when clicking outside
+            const closePopup = (event) => {
+                if (!popup.contains(event.target) && event.target !== singleColorPickerBtn && !singleColorPickerBtn.contains(event.target)) {
+                    popup.remove();
+                    document.removeEventListener('click', closePopup);
+                }
+            };
+
+            setTimeout(() => {
+                document.addEventListener('click', closePopup);
+            }, 100);
+
+            // Append to body and position relative to button
+            document.body.appendChild(popup);
+            
+            // Position popup above the button
+            const buttonRect = singleColorPickerBtn.getBoundingClientRect();
+            popup.style.left = buttonRect.left + 'px';
+            popup.style.bottom = (window.innerHeight - buttonRect.top + 10) + 'px';
+            popup.style.width = Math.max(buttonRect.width, 350) + 'px';
+            
+            // Initialize preview
+            updateColorFromRGB();
+        });
+
+        clearSingleColorBtn.addEventListener('click', () => {
+            state.red = 255;
+            state.green = 255;
+            state.blue = 255;
+            updateColorPreview();
+            // Clear gradient selection
+            gradientSelect.value = '';
+            predefinedGradientPreview.style.display = 'none';
+            localStorage.setItem('lastGradient', '');
+            if (messageInput.value) {
+                generateAndUpdate();
+            }
+        });
+
+        // Initialize color preview
+        updateColorPreview();
+
+        // Background color (mark) preview update
+        function updateBgColorPreview() {
+            if (state.hasBackground) {
+                const alpha = state.bgAlpha / 255; // Convert to 0-1 range
+                const color = `rgba(${state.bgRed}, ${state.bgGreen}, ${state.bgBlue}, ${alpha})`;
+                bgColorPreview.style.background = color;
+                bgColorPreview.style.border = '2px solid #444';
+            } else {
+                // Show transparent (no background)
+                bgColorPreview.style.background = 'transparent';
+                bgColorPreview.style.border = '2px dashed #666';
+            }
+        }
+
+        // Background color picker button
+        bgColorPickerBtn.addEventListener('click', (e) => {
+            // Remove any existing popup
+            const existingPopup = document.querySelector('.color-picker-popup');
+            if (existingPopup) {
+                existingPopup.remove();
+                return;
+            }
+
+            // Create a popup with enhanced color picker (including alpha)
+            const popup = document.createElement('div');
+            popup.className = 'color-picker-popup';
+
+            const label = document.createElement('label');
+            label.textContent = 'Choose background color:';
+            popup.appendChild(label);
+
+            const mainContainer = document.createElement('div');
+            mainContainer.className = 'color-picker-main';
+
+            // Visual color picker (native)
+            const visualContainer = document.createElement('div');
+            visualContainer.className = 'color-picker-visual';
+            const colorPicker = document.createElement('input');
+            colorPicker.type = 'color';
+            const currentHex = rgbToHex(state.bgRed, state.bgGreen, state.bgBlue);
+            colorPicker.value = currentHex;
+            visualContainer.appendChild(colorPicker);
+
+            // RGB + Alpha Controls
+            const controlsContainer = document.createElement('div');
+            controlsContainer.className = 'color-picker-controls';
+
+            const rgbContainer = document.createElement('div');
+            rgbContainer.className = 'color-picker-rgb';
+
+            let currentColor = { r: state.bgRed, g: state.bgGreen, b: state.bgBlue, a: state.bgAlpha };
+
+            function updateColorFromRGB() {
+                const hex = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
+                colorPicker.value = hex;
+                hexInput.value = hex;
+                colorPicker.style.background = hex;
+                // Update preview
+                const alpha = currentColor.a / 255;
+                bgColorPreview.style.background = `rgba(${currentColor.r}, ${currentColor.g}, ${currentColor.b}, ${alpha})`;
+                bgColorPreview.style.border = '2px solid #444';
+            }
+
+            function updateColorFromHex(hex) {
+                const rgb = hexToRgb(hex);
+                if (rgb) {
+                    currentColor.r = rgb.r;
+                    currentColor.g = rgb.g;
+                    currentColor.b = rgb.b;
+                    redSlider.value = rgb.r;
+                    greenSlider.value = rgb.g;
+                    blueSlider.value = rgb.b;
+                    redValue.value = rgb.r;
+                    greenValue.value = rgb.g;
+                    blueValue.value = rgb.b;
+                    colorPicker.value = hex;
+                    colorPicker.style.background = hex;
+                    updateColorFromRGB();
+                }
+            }
+
+            // Red slider
+            const redItem = document.createElement('div');
+            redItem.className = 'color-picker-rgb-item';
+            const redLabel = document.createElement('label');
+            redLabel.textContent = 'R';
+            const redSlider = document.createElement('input');
+            redSlider.type = 'range';
+            redSlider.min = '0';
+            redSlider.max = '255';
+            redSlider.value = state.bgRed.toString();
+            const redValue = document.createElement('input');
+            redValue.type = 'number';
+            redValue.min = '0';
+            redValue.max = '255';
+            redValue.value = state.bgRed.toString();
+            redSlider.addEventListener('input', (e) => {
+                currentColor.r = parseInt(e.target.value);
+                redValue.value = currentColor.r;
+                updateColorFromRGB();
+            });
+            redValue.addEventListener('input', (e) => {
+                currentColor.r = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+                redSlider.value = currentColor.r;
+                updateColorFromRGB();
+            });
+            redItem.appendChild(redLabel);
+            redItem.appendChild(redSlider);
+            redItem.appendChild(redValue);
+            rgbContainer.appendChild(redItem);
+
+            // Green slider
+            const greenItem = document.createElement('div');
+            greenItem.className = 'color-picker-rgb-item';
+            const greenLabel = document.createElement('label');
+            greenLabel.textContent = 'G';
+            const greenSlider = document.createElement('input');
+            greenSlider.type = 'range';
+            greenSlider.min = '0';
+            greenSlider.max = '255';
+            greenSlider.value = state.bgGreen.toString();
+            const greenValue = document.createElement('input');
+            greenValue.type = 'number';
+            greenValue.min = '0';
+            greenValue.max = '255';
+            greenValue.value = state.bgGreen.toString();
+            greenSlider.addEventListener('input', (e) => {
+                currentColor.g = parseInt(e.target.value);
+                greenValue.value = currentColor.g;
+                updateColorFromRGB();
+            });
+            greenValue.addEventListener('input', (e) => {
+                currentColor.g = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+                greenSlider.value = currentColor.g;
+                updateColorFromRGB();
+            });
+            greenItem.appendChild(greenLabel);
+            greenItem.appendChild(greenSlider);
+            greenItem.appendChild(greenValue);
+            rgbContainer.appendChild(greenItem);
+
+            // Blue slider
+            const blueItem = document.createElement('div');
+            blueItem.className = 'color-picker-rgb-item';
+            const blueLabel = document.createElement('label');
+            blueLabel.textContent = 'B';
+            const blueSlider = document.createElement('input');
+            blueSlider.type = 'range';
+            blueSlider.min = '0';
+            blueSlider.max = '255';
+            blueSlider.value = state.bgBlue.toString();
+            const blueValue = document.createElement('input');
+            blueValue.type = 'number';
+            blueValue.min = '0';
+            blueValue.max = '255';
+            blueValue.value = state.bgBlue.toString();
+            blueSlider.addEventListener('input', (e) => {
+                currentColor.b = parseInt(e.target.value);
+                blueValue.value = currentColor.b;
+                updateColorFromRGB();
+            });
+            blueValue.addEventListener('input', (e) => {
+                currentColor.b = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+                blueSlider.value = currentColor.b;
+                updateColorFromRGB();
+            });
+            blueItem.appendChild(blueLabel);
+            blueItem.appendChild(blueSlider);
+            blueItem.appendChild(blueValue);
+            rgbContainer.appendChild(blueItem);
+
+            // Alpha slider
+            const alphaItem = document.createElement('div');
+            alphaItem.className = 'color-picker-rgb-item';
+            const alphaLabel = document.createElement('label');
+            alphaLabel.textContent = 'A';
+            const alphaSlider = document.createElement('input');
+            alphaSlider.type = 'range';
+            alphaSlider.min = '0';
+            alphaSlider.max = '255';
+            alphaSlider.value = state.bgAlpha.toString();
+            const alphaValue = document.createElement('input');
+            alphaValue.type = 'number';
+            alphaValue.min = '0';
+            alphaValue.max = '255';
+            alphaValue.value = state.bgAlpha.toString();
+            alphaSlider.addEventListener('input', (e) => {
+                currentColor.a = parseInt(e.target.value);
+                alphaValue.value = currentColor.a;
+                updateColorFromRGB();
+            });
+            alphaValue.addEventListener('input', (e) => {
+                currentColor.a = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+                alphaSlider.value = currentColor.a;
+                updateColorFromRGB();
+            });
+            alphaItem.appendChild(alphaLabel);
+            alphaItem.appendChild(alphaSlider);
+            alphaItem.appendChild(alphaValue);
+            rgbContainer.appendChild(alphaItem);
+
+            controlsContainer.appendChild(rgbContainer);
+
+            // Hex input
+            const hexContainer = document.createElement('div');
+            hexContainer.className = 'color-picker-hex';
+            const hexLabel = document.createElement('label');
+            hexLabel.textContent = 'Hex:';
+            hexLabel.style.marginBottom = '5px';
+            const hexInput = document.createElement('input');
+            hexInput.type = 'text';
+            hexInput.value = currentHex;
+            hexInput.placeholder = '#FF0000';
+            hexInput.pattern = '^#[0-9A-Fa-f]{6}$';
+            hexInput.addEventListener('input', (e) => {
+                let value = e.target.value.toUpperCase();
+                if (!value.startsWith('#')) {
+                    value = '#' + value;
+                }
+                if (/^#[0-9A-F]{6}$/.test(value)) {
+                    updateColorFromHex(value);
+                }
+                hexInput.value = value;
+            });
+            hexContainer.appendChild(hexLabel);
+            hexContainer.appendChild(hexInput);
+            controlsContainer.appendChild(hexContainer);
+
+            mainContainer.appendChild(visualContainer);
+            mainContainer.appendChild(controlsContainer);
+            popup.appendChild(mainContainer);
+
+            // Action buttons
+            const actionsContainer = document.createElement('div');
+            actionsContainer.className = 'color-picker-actions';
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.addEventListener('click', () => {
+                popup.remove();
+                document.removeEventListener('click', closePopup);
+            });
+
+            const applyBtn = document.createElement('button');
+            applyBtn.className = 'btn-primary';
+            applyBtn.textContent = 'Apply';
+            applyBtn.addEventListener('click', () => {
+                state.bgRed = currentColor.r;
+                state.bgGreen = currentColor.g;
+                state.bgBlue = currentColor.b;
+                state.bgAlpha = currentColor.a;
+                state.hasBackground = true;
+                updateBgColorPreview();
+                if (messageInput.value) {
+                    generateAndUpdate();
+                }
+                popup.remove();
+                document.removeEventListener('click', closePopup);
+            });
+
+            actionsContainer.appendChild(cancelBtn);
+            actionsContainer.appendChild(applyBtn);
+            popup.appendChild(actionsContainer);
+
+            // Update when native color picker changes
+            colorPicker.addEventListener('change', (e) => {
+                updateColorFromHex(e.target.value);
+            });
+
+            // Close popup when clicking outside
+            const closePopup = (event) => {
+                if (!popup.contains(event.target) && event.target !== bgColorPickerBtn && !bgColorPickerBtn.contains(event.target)) {
+                    popup.remove();
+                    document.removeEventListener('click', closePopup);
+                }
+            };
+
+            setTimeout(() => {
+                document.addEventListener('click', closePopup);
+            }, 100);
+
+            // Append to body and position relative to button
+            document.body.appendChild(popup);
+            
+            // Position popup above the button
+            const buttonRect = bgColorPickerBtn.getBoundingClientRect();
+            popup.style.left = buttonRect.left + 'px';
+            popup.style.bottom = (window.innerHeight - buttonRect.top + 10) + 'px';
+            popup.style.width = Math.max(buttonRect.width, 350) + 'px';
+            
+            // Initialize preview
+            updateColorFromRGB();
+        });
+
+        clearBgColorBtn.addEventListener('click', () => {
+            state.bgRed = 0;
+            state.bgGreen = 0;
+            state.bgBlue = 0;
+            state.bgAlpha = 156;
+            state.hasBackground = false; // Remove mark tag completely (transparent)
+            updateBgColorPreview();
+            if (messageInput.value) {
+                generateAndUpdate();
+            }
+        });
+
+        // Function to update letter-by-letter sliders
+        function updateLetterRotationSliders() {
+            const text = messageInput.value || '';
+            const currentLength = state.letterRotations.length;
+            
+            // Resize array to match text length
+            if (text.length > currentLength) {
+                // Add new letters with default rotation 0
+                for (let i = currentLength; i < text.length; i++) {
+                    state.letterRotations.push(0);
+                }
+            } else if (text.length < currentLength) {
+                // Remove extra rotations
+                state.letterRotations = state.letterRotations.slice(0, text.length);
+            }
+            
+            // Clear existing sliders
+            letterRotationSliders.innerHTML = '';
+            
+            // Create slider for each letter
+            text.split('').forEach((char, index) => {
+                const sliderContainer = document.createElement('div');
+                sliderContainer.style.display = 'flex';
+                sliderContainer.style.alignItems = 'center';
+                sliderContainer.style.gap = '12px';
+                sliderContainer.style.padding = '8px';
+                sliderContainer.style.background = '#1e1e2e';
+                sliderContainer.style.borderRadius = '6px';
+                
+                const charLabel = document.createElement('label');
+                charLabel.textContent = `"${char}"`;
+                charLabel.style.minWidth = '40px';
+                charLabel.style.margin = '0';
+                charLabel.style.fontWeight = '600';
+                charLabel.style.fontSize = '16px';
+                
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.min = '0';
+                slider.max = '360';
+                slider.value = state.letterRotations[index] || 0;
+                slider.step = '1';
+                slider.style.flex = '1';
+                slider.className = 'letter-rotation-slider';
+                slider.dataset.index = index;
+                
+                const valueInput = document.createElement('input');
+                valueInput.type = 'number';
+                valueInput.min = '0';
+                valueInput.max = '360';
+                valueInput.value = state.letterRotations[index] || 0;
+                valueInput.style.width = '80px';
+                valueInput.style.padding = '10px';
+                valueInput.style.minHeight = '44px';
+                valueInput.style.background = '#2a2a2a';
+                valueInput.style.color = 'white';
+                valueInput.style.border = '2px solid #444';
+                valueInput.style.borderRadius = '6px';
+                valueInput.style.fontSize = '14px';
+                valueInput.style.textAlign = 'center';
+                valueInput.className = 'letter-rotation-input';
+                valueInput.dataset.index = index;
+                
+                const degreeLabel = document.createElement('span');
+                degreeLabel.textContent = '°';
+                degreeLabel.style.minWidth = '20px';
+                degreeLabel.style.textAlign = 'center';
+                degreeLabel.style.fontWeight = '500';
+                
+                // Event listeners
+                slider.addEventListener('input', (e) => {
+                    const idx = parseInt(e.target.dataset.index);
+                    const val = parseInt(e.target.value);
+                    state.letterRotations[idx] = val;
+                    valueInput.value = val;
+                    if (messageInput.value) {
+                        generateAndUpdate();
+                    }
+                });
+                
+                valueInput.addEventListener('input', (e) => {
+                    const idx = parseInt(e.target.dataset.index);
+                    let val = parseInt(e.target.value) || 0;
+                    val = Math.max(0, Math.min(360, val));
+                    state.letterRotations[idx] = val;
+                    slider.value = val;
+                    valueInput.value = val;
+                    if (messageInput.value) {
+                        generateAndUpdate();
+                    }
+                });
+                
+                sliderContainer.appendChild(charLabel);
+                sliderContainer.appendChild(slider);
+                sliderContainer.appendChild(valueInput);
+                sliderContainer.appendChild(degreeLabel);
+                letterRotationSliders.appendChild(sliderContainer);
+            });
+        }
+
+        // Rotation controls
+        rotationMode.addEventListener('change', (e) => {
+            state.rotationMode = e.target.value;
+            
+            // Show/hide appropriate controls
+            if (state.rotationMode === 'letterByLetter') {
+                singleRotationControls.style.display = 'none';
+                letterByLetterControls.style.display = 'flex';
+                updateLetterRotationSliders();
+            } else if (state.rotationMode && state.rotationMode !== '') {
+                singleRotationControls.style.display = 'flex';
+                letterByLetterControls.style.display = 'none';
+            } else {
+                singleRotationControls.style.display = 'none';
+                letterByLetterControls.style.display = 'none';
+            }
+            
+            if (messageInput.value) {
+                generateAndUpdate();
+            }
+        });
+
+        // Reset rotation button
+        resetRotationBtn.addEventListener('click', () => {
+            // Reset state to defaults
+            state.rotationMode = '';
+            state.rotationValue = 0;
+            state.letterRotations = [];
+            
+            // Update UI
+            rotationMode.value = '';
+            rotationSlider.value = 0;
+            rotationInput.value = 0;
+            singleRotationControls.style.display = 'none';
+            letterByLetterControls.style.display = 'none';
+            letterRotationSliders.innerHTML = '';
+            
+            // Regenerate if there's a message
+            if (messageInput.value) {
+                generateAndUpdate();
+            }
+        });
+
+        rotationSlider.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            state.rotationValue = value;
+            rotationInput.value = value;
+            if (messageInput.value && state.rotationMode && state.rotationMode !== '' && state.rotationMode !== 'letterByLetter') {
+                generateAndUpdate();
+            }
+        });
+
+        rotationInput.addEventListener('input', (e) => {
+            let value = parseInt(e.target.value) || 0;
+            value = Math.max(0, Math.min(360, value));
+            state.rotationValue = value;
+            rotationSlider.value = value;
+            rotationInput.value = value;
+            if (messageInput.value && state.rotationMode && state.rotationMode !== '' && state.rotationMode !== 'letterByLetter') {
+                generateAndUpdate();
+            }
+        });
+
+        // Update letter sliders when message changes
+        messageInput.addEventListener('input', () => {
+            if (state.rotationMode === 'letterByLetter') {
+                updateLetterRotationSliders();
+            }
+        });
+
+        // Initialize with transparent background (no mark tag)
+        updateBgColorPreview();
+
+        // Custom gradient functions
+        function generateRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('').toUpperCase();
+        }
+
+        function updateColorCount() {
+            // Update add button state
+            if (customGradientColors.length >= MAX_COLORS) {
+                addColorStopBtn.disabled = true;
+                addColorStopBtn.style.opacity = '0.5';
+                addColorStopBtn.style.cursor = 'not-allowed';
+            } else {
+                addColorStopBtn.disabled = false;
+                addColorStopBtn.style.opacity = '1';
+                addColorStopBtn.style.cursor = 'pointer';
+            }
+        }
+
+        function addColorStop(color = '#FF0000') {
+            // Check condition BEFORE any modifications
+            if (customGradientColors.length >= MAX_COLORS) {
+                showError(`Maximum ${MAX_COLORS} colors allowed!`);
+                return; // Exit early without modifying anything
+            }
+            customGradientColors.push(color);
+            renderColorStops();
+            updateCustomGradientPreview();
+            updateColorCount();
+            // Auto-generate if there's text
+            if (messageInput.value) {
+                const code = generateCustomGradient();
+                if (code) {
+                    resultTextarea.value = code;
+                    updatePreview(code);
+                    localStorage.setItem('lastGradient', 'custom');
+                }
+            }
+        }
+
+        function removeColorStop(index) {
+            customGradientColors.splice(index, 1);
+            renderColorStops();
+            updateCustomGradientPreview();
+            updateColorCount();
+            // Auto-generate if there's text
+            if (messageInput.value) {
+                const code = generateCustomGradient();
+                if (code) {
+                    resultTextarea.value = code;
+                    updatePreview(code);
+                    localStorage.setItem('lastGradient', 'custom');
+                }
+            }
+        }
+
+        function updateColorStop(index, color) {
+            customGradientColors[index] = color;
+            updateCustomGradientPreview();
+        }
+
+        function renderColorStops() {
+            colorStopsContainer.innerHTML = '';
+            customGradientColors.forEach((color, index) => {
+                const stopItem = document.createElement('div');
+                stopItem.className = 'color-stop-item';
+                
+                const colorPicker = document.createElement('input');
+                colorPicker.type = 'color';
+                colorPicker.className = 'color-stop-picker';
+                colorPicker.value = color;
+                colorPicker.style.background = color;
+                colorPicker.addEventListener('input', (e) => {
+                    const newColor = e.target.value.toUpperCase();
+                    updateColorStop(index, newColor);
+                    e.target.style.background = newColor;
+                    // Switch to custom gradient when user edits colors
+                    localStorage.setItem('lastGradient', 'custom');
+                    // Auto-generate if there's text
+                    if (messageInput.value) {
+                        const code = generateCustomGradient();
+                        if (code) {
+                            resultTextarea.value = code;
+                            updatePreview(code);
+                        }
+                    }
+                });
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'color-stop-remove';
+                removeBtn.textContent = '×';
+                removeBtn.type = 'button'; // Prevent form submission
+                removeBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    removeColorStop(index);
+                });
+                
+                stopItem.appendChild(colorPicker);
+                stopItem.appendChild(removeBtn);
+                colorStopsContainer.appendChild(stopItem);
+            });
+        }
+
+        function updateCustomGradientPreview() {
+            if (customGradientColors.length === 0) {
+                customGradientPreview.style.background = 'transparent';
+            } else if (customGradientColors.length === 1) {
+                customGradientPreview.style.background = customGradientColors[0];
+            } else {
+                const gradientString = customGradientColors.join(', ');
+                customGradientPreview.style.background = `linear-gradient(to right, ${gradientString})`;
+            }
+        }
+
+        // Helper function to apply rotation to text
+        function applyRotation(text) {
+            if (!state.rotationMode || state.rotationMode === '' || !text) return text;
+            
+            const textArray = text.split('');
+            let result = '';
+            
+            textArray.forEach((char, index) => {
+                let rotationValue = state.rotationValue;
+                
+                if (state.rotationMode === 'alternating') {
+                    // Alternate between 0 and slider value
+                    rotationValue = (index % 2 === 0) ? 0 : state.rotationValue;
+                } else if (state.rotationMode === 'random') {
+                    // Random rotation for each character
+                    rotationValue = Math.floor(Math.random() * 361); // 0-360
+                } else if (state.rotationMode === 'letterByLetter') {
+                    // Use per-letter rotation values
+                    rotationValue = state.letterRotations[index] || 0;
+                }
+                // 'all' mode uses state.rotationValue as is
+                
+                result += `<rotate=${rotationValue}>${char}</rotate>`;
+            });
+            
+            return result;
+        }
+
+        function generateCustomGradient() {
+            const text = messageInput.value;
+            if (!text) return '';
+
+            // 0 colors: reset to white
+            if (customGradientColors.length === 0) {
+                state.red = 255;
+                state.green = 255;
+                state.blue = 255;
+                updateColorPreview();
+                return generateSolidColor();
+            }
+
+            // 1 color: set as solid color
+            if (customGradientColors.length === 1) {
+                const rgb = hexToRgb(customGradientColors[0]);
+                if (rgb) {
+                    state.red = rgb.r;
+                    state.green = rgb.g;
+                    state.blue = rgb.b;
+                    updateColorPreview();
+                }
+                return generateSolidColor();
+            }
+
+            // 2+ colors: apply gradient
+            const textArray = text.split('');
+            let result = '';
+
+            textArray.forEach((char, index) => {
+                const factor = textArray.length > 1 ? index / (textArray.length - 1) : 0;
+                const colorIndex = Math.floor(factor * (customGradientColors.length - 1));
+                const nextColorIndex = Math.min(colorIndex + 1, customGradientColors.length - 1);
+                const localFactor = (factor * (customGradientColors.length - 1)) % 1;
+
+                const color1 = hexToRgb(customGradientColors[colorIndex]);
+                const color2 = hexToRgb(customGradientColors[nextColorIndex]);
+                const interpolated = interpolateColor(color1, color2, localFactor);
+                const hexColor = rgbToHex(interpolated.r, interpolated.g, interpolated.b);
+
+                let charResult = char;
+                
+                // Apply rotation per character
+                if (state.rotationMode && state.rotationMode !== '') {
+                    let rotationValue = state.rotationValue;
+                    if (state.rotationMode === 'alternating') {
+                        rotationValue = (index % 2 === 0) ? 0 : state.rotationValue;
+                    } else if (state.rotationMode === 'random') {
+                        rotationValue = Math.floor(Math.random() * 361);
+                    } else if (state.rotationMode === 'letterByLetter') {
+                        rotationValue = state.letterRotations[index] || 0;
+                    }
+                    charResult = `<rotate=${rotationValue}>${charResult}</rotate>`;
+                }
+                
+                if (state.bold) charResult = `<b>${charResult}</b>`;
+                if (state.italic) charResult = `<i>${charResult}</i>`;
+                if (state.underline) charResult = `<u>${charResult}</u>`;
+                if (state.fontSize) charResult = `<size=${state.fontSize}>${charResult}</size>`;
+
+                // Apply background color using <mark> tag with alpha (RRGGBBAA format)
+                if (state.hasBackground) {
+                    const bgHexColor = rgbToHex(state.bgRed, state.bgGreen, state.bgBlue);
+                    const alphaHex = state.bgAlpha.toString(16).padStart(2, '0').toUpperCase();
+                    charResult = `<mark=${bgHexColor}${alphaHex}>${charResult}</mark>`;
+                }
+
+                // For gradients, put alignment in the first character's color tag only
+                if (state.alignment && index === 0) {
+                    result += `<color=${hexColor}><align=${state.alignment}>${charResult}</color>`;
+                } else {
+                    result += `<color=${hexColor}>${charResult}</color>`;
+                }
+            });
+
+            return result;
+        }
+
+        // Initialize custom gradient
+        renderColorStops();
+        updateCustomGradientPreview();
+        updateColorCount();
+
+        // Prevent form submission from resetting anything
+        document.getElementById('textForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            return false;
+        });
+
+        // Random gradient button - generates specified number of random colors
+        randomGradientBtn.addEventListener('click', () => {
+            const count = parseInt(randomColorCountInput.value) || 2;
+            const numColors = Math.max(1, Math.min(MAX_COLORS, count));
+            
+            // Generate the specified number of random colors
+            customGradientColors = [];
+            for (let i = 0; i < numColors; i++) {
+                customGradientColors.push(generateRandomColor());
+            }
+            
+            renderColorStops();
+            updateCustomGradientPreview();
+            updateColorCount();
+            // Auto-generate if there's text
+            if (messageInput.value) {
+                const code = generateCustomGradient();
+                if (code) {
+                    resultTextarea.value = code;
+                    updatePreview(code);
+                    localStorage.setItem('lastGradient', 'custom');
+                }
+            }
+        });
+
+        // Validate random color count input
+        randomColorCountInput.addEventListener('input', (e) => {
+            let value = parseInt(e.target.value);
+            if (isNaN(value) || value < 1) {
+                value = 1;
+            } else if (value > MAX_COLORS) {
+                value = MAX_COLORS;
+            }
+            e.target.value = value;
+        });
+
+        addColorStopBtn.addEventListener('click', (e) => {
+            if (customGradientColors.length >= MAX_COLORS) {
+                showError(`Maximum ${MAX_COLORS} colors allowed!`);
+                return;
+            }
+            
+            // Remove any existing popup
+            const existingPopup = document.querySelector('.color-picker-popup');
+            if (existingPopup) {
+                existingPopup.remove();
+                return;
+            }
+            
+            // Create a popup with enhanced color picker
+            const popup = document.createElement('div');
+            popup.className = 'color-picker-popup';
+            
+            const label = document.createElement('label');
+            label.textContent = 'Choose a color:';
+            popup.appendChild(label);
+            
+            const mainContainer = document.createElement('div');
+            mainContainer.className = 'color-picker-main';
+            
+            // Visual color picker (native)
+            const visualContainer = document.createElement('div');
+            visualContainer.className = 'color-picker-visual';
+            const colorPicker = document.createElement('input');
+            colorPicker.type = 'color';
+            colorPicker.value = '#FF0000';
+            visualContainer.appendChild(colorPicker);
+            
+            // RGB Controls
+            const controlsContainer = document.createElement('div');
+            controlsContainer.className = 'color-picker-controls';
+            
+            const rgbContainer = document.createElement('div');
+            rgbContainer.className = 'color-picker-rgb';
+            
+            let currentColor = { r: 255, g: 0, b: 0 };
+            
+            function updateColorFromRGB() {
+                const hex = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
+                colorPicker.value = hex;
+                hexInput.value = hex;
+                colorPicker.style.background = hex;
+            }
+            
+            function updateColorFromHex(hex) {
+                const rgb = hexToRgb(hex);
+                if (rgb) {
+                    currentColor = rgb;
+                    redSlider.value = rgb.r;
+                    greenSlider.value = rgb.g;
+                    blueSlider.value = rgb.b;
+                    redValue.value = rgb.r;
+                    greenValue.value = rgb.g;
+                    blueValue.value = rgb.b;
+                    colorPicker.value = hex;
+                    colorPicker.style.background = hex;
+                }
+            }
+            
+            // Red slider
+            const redItem = document.createElement('div');
+            redItem.className = 'color-picker-rgb-item';
+            const redLabel = document.createElement('label');
+            redLabel.textContent = 'R';
+            const redSlider = document.createElement('input');
+            redSlider.type = 'range';
+            redSlider.min = '0';
+            redSlider.max = '255';
+            redSlider.value = '255';
+            const redValue = document.createElement('input');
+            redValue.type = 'number';
+            redValue.min = '0';
+            redValue.max = '255';
+            redValue.value = '255';
+            redSlider.addEventListener('input', (e) => {
+                currentColor.r = parseInt(e.target.value);
+                redValue.value = currentColor.r;
+                updateColorFromRGB();
+            });
+            redValue.addEventListener('input', (e) => {
+                currentColor.r = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+                redSlider.value = currentColor.r;
+                updateColorFromRGB();
+            });
+            redItem.appendChild(redLabel);
+            redItem.appendChild(redSlider);
+            redItem.appendChild(redValue);
+            rgbContainer.appendChild(redItem);
+            
+            // Green slider
+            const greenItem = document.createElement('div');
+            greenItem.className = 'color-picker-rgb-item';
+            const greenLabel = document.createElement('label');
+            greenLabel.textContent = 'G';
+            const greenSlider = document.createElement('input');
+            greenSlider.type = 'range';
+            greenSlider.min = '0';
+            greenSlider.max = '255';
+            greenSlider.value = '0';
+            const greenValue = document.createElement('input');
+            greenValue.type = 'number';
+            greenValue.min = '0';
+            greenValue.max = '255';
+            greenValue.value = '0';
+            greenSlider.addEventListener('input', (e) => {
+                currentColor.g = parseInt(e.target.value);
+                greenValue.value = currentColor.g;
+                updateColorFromRGB();
+            });
+            greenValue.addEventListener('input', (e) => {
+                currentColor.g = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+                greenSlider.value = currentColor.g;
+                updateColorFromRGB();
+            });
+            greenItem.appendChild(greenLabel);
+            greenItem.appendChild(greenSlider);
+            greenItem.appendChild(greenValue);
+            rgbContainer.appendChild(greenItem);
+            
+            // Blue slider
+            const blueItem = document.createElement('div');
+            blueItem.className = 'color-picker-rgb-item';
+            const blueLabel = document.createElement('label');
+            blueLabel.textContent = 'B';
+            const blueSlider = document.createElement('input');
+            blueSlider.type = 'range';
+            blueSlider.min = '0';
+            blueSlider.max = '255';
+            blueSlider.value = '0';
+            const blueValue = document.createElement('input');
+            blueValue.type = 'number';
+            blueValue.min = '0';
+            blueValue.max = '255';
+            blueValue.value = '0';
+            blueSlider.addEventListener('input', (e) => {
+                currentColor.b = parseInt(e.target.value);
+                blueValue.value = currentColor.b;
+                updateColorFromRGB();
+            });
+            blueValue.addEventListener('input', (e) => {
+                currentColor.b = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+                blueSlider.value = currentColor.b;
+                updateColorFromRGB();
+            });
+            blueItem.appendChild(blueLabel);
+            blueItem.appendChild(blueSlider);
+            blueItem.appendChild(blueValue);
+            rgbContainer.appendChild(blueItem);
+            
+            controlsContainer.appendChild(rgbContainer);
+            
+            // Hex input
+            const hexContainer = document.createElement('div');
+            hexContainer.className = 'color-picker-hex';
+            const hexLabel = document.createElement('label');
+            hexLabel.textContent = 'Hex:';
+            hexLabel.style.marginBottom = '5px';
+            const hexInput = document.createElement('input');
+            hexInput.type = 'text';
+            hexInput.value = '#FF0000';
+            hexInput.placeholder = '#FF0000';
+            hexInput.pattern = '^#[0-9A-Fa-f]{6}$';
+            hexInput.addEventListener('input', (e) => {
+                let value = e.target.value.toUpperCase();
+                if (!value.startsWith('#')) {
+                    value = '#' + value;
+                }
+                if (/^#[0-9A-F]{6}$/.test(value)) {
+                    updateColorFromHex(value);
+                }
+                hexInput.value = value;
+            });
+            hexContainer.appendChild(hexLabel);
+            hexContainer.appendChild(hexInput);
+            controlsContainer.appendChild(hexContainer);
+            
+            mainContainer.appendChild(visualContainer);
+            mainContainer.appendChild(controlsContainer);
+            popup.appendChild(mainContainer);
+            
+            // Action buttons
+            const actionsContainer = document.createElement('div');
+            actionsContainer.className = 'color-picker-actions';
+            
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.addEventListener('click', () => {
+                popup.remove();
+                document.removeEventListener('click', closePopup);
+            });
+            
+            const addBtn = document.createElement('button');
+            addBtn.className = 'btn-primary';
+            addBtn.textContent = 'Add Color';
+            addBtn.addEventListener('click', () => {
+                const selectedColor = colorPicker.value.toUpperCase();
+                addColorStop(selectedColor);
+                popup.remove();
+                document.removeEventListener('click', closePopup);
+            });
+            
+            actionsContainer.appendChild(cancelBtn);
+            actionsContainer.appendChild(addBtn);
+            popup.appendChild(actionsContainer);
+            
+            // Update when native color picker changes
+            colorPicker.addEventListener('change', (e) => {
+                updateColorFromHex(e.target.value);
+            });
+            
+            // Close popup when clicking outside
+            const closePopup = (event) => {
+                if (!popup.contains(event.target) && event.target !== addColorStopBtn && !addColorStopBtn.contains(event.target)) {
+                    popup.remove();
+                    document.removeEventListener('click', closePopup);
+                }
+            };
+            
+            setTimeout(() => {
+                document.addEventListener('click', closePopup);
+            }, 100);
+            
+            // Append to the controls container
+            // Append to body and position relative to button
+            document.body.appendChild(popup);
+            
+            // Position popup above the button
+            const buttonRect = addColorStopBtn.getBoundingClientRect();
+            popup.style.left = buttonRect.left + 'px';
+            popup.style.bottom = (window.innerHeight - buttonRect.top + 10) + 'px';
+            popup.style.width = Math.max(buttonRect.width, 350) + 'px';
+        });
+
+        // Clear gradient button
+        clearGradientBtn.addEventListener('click', () => {
+            // Clear custom gradient colors
+            customGradientColors = [];
+            renderColorStops();
+            updateCustomGradientPreview();
+            updateColorCount();
+            
+                // Clear predefined gradient selection
+                gradientSelect.value = '';
+                localStorage.setItem('lastGradient', '');
+            
+            // Reset to default white font color
+            state.red = 255;
+            state.green = 255;
+            state.blue = 255;
+            updateColorPreview();
+            
+            // Regenerate with solid white color
+            if (messageInput.value) {
+                const code = generateSolidColor();
+                resultTextarea.value = code;
+                updatePreview(code);
+            }
+        });
+
+        // Convert HTML to Unity Rich Text
+        function htmlToUnityRichText(html) {
+            // Create a temporary DOM element to parse HTML
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            
+            function processNode(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    return node.textContent;
+                }
+                
+                if (node.nodeType !== Node.ELEMENT_NODE) {
+                    return '';
+                }
+                
+                let result = '';
+                const tagName = node.tagName.toLowerCase();
+                const style = node.style;
+                const computedStyle = window.getComputedStyle ? window.getComputedStyle(node) : null;
+                
+                // Process child nodes first
+                let content = '';
+                for (let i = 0; i < node.childNodes.length; i++) {
+                    content += processNode(node.childNodes[i]);
+                }
+                
+                // Apply Unity Rich Text tags based on HTML
+                result = content;
+                
+                // Bold
+                if (tagName === 'b' || tagName === 'strong') {
+                    result = `<b>${result}</b>`;
+                }
+                
+                // Italic
+                if (tagName === 'i' || tagName === 'em') {
+                    result = `<i>${result}</i>`;
+                }
+                
+                // Underline
+                if (tagName === 'u') {
+                    result = `<u>${result}</u>`;
+                }
+                
+                // Span with styles
+                if (tagName === 'span' || tagName === 'div') {
+                    // Check for color
+                    if (style.color) {
+                        const colorMatch = style.color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                        if (colorMatch) {
+                            const hex = rgbToHex(parseInt(colorMatch[1]), parseInt(colorMatch[2]), parseInt(colorMatch[3]));
+                            result = `<color=${hex}>${result}</color>`;
+                        }
+                    }
+                    
+                    // Check for font size
+                    if (style.fontSize) {
+                        const size = parseInt(style.fontSize);
+                        if (size && !isNaN(size)) {
+                            result = `<size=${size}>${result}</size>`;
+                        }
+                    }
+                    
+                    // Check for background color
+                    if (style.backgroundColor && style.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+                        const bgMatch = style.backgroundColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+                        if (bgMatch) {
+                            const r = parseInt(bgMatch[1]);
+                            const g = parseInt(bgMatch[2]);
+                            const b = parseInt(bgMatch[3]);
+                            const a = bgMatch[4] ? Math.round(parseFloat(bgMatch[4]) * 255) : 255;
+                            const hex = rgbToHex(r, g, b);
+                            const alphaHex = a.toString(16).padStart(2, '0').toUpperCase();
+                            result = `<mark=${hex}${alphaHex}>${result}</mark>`;
+                        }
+                    }
+                    
+                    // Check for text alignment
+                    if (style.textAlign && style.textAlign !== 'start' && style.textAlign !== 'left') {
+                        result = `<align=${style.textAlign}>${result}</align>`;
+                    }
+                }
+                
+                return result;
+            }
+            
+            let result = '';
+            for (let i = 0; i < temp.childNodes.length; i++) {
+                result += processNode(temp.childNodes[i]);
+            }
+            
+            return result;
+        }
+
+        // Helper function to convert RGB to hex
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('').toUpperCase();
+        }
+
+        // Helper function to interpolate between two colors
+        function interpolateColor(color1, color2, factor) {
+            const r = Math.round(color1.r + (color2.r - color1.r) * factor);
+            const g = Math.round(color1.g + (color2.g - color1.g) * factor);
+            const b = Math.round(color1.b + (color2.b - color1.b) * factor);
+            return { r, g, b };
+        }
+
+        // Helper function to parse hex color
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        // Gradient definitions from Coolors.co
+        const gradients = {
+            'Sunset': ['#ff7e5f', '#feb47b'],
+            'Cool Blues': ['#2193b0', '#6dd5ed'],
+            'Purple Dream': ['#cc2b5e', '#753a88'],
+            'Aqua Marine': ['#1a2980', '#26d0ce'],
+            'Fresh Turboscent': ['#f1f2b5', '#135058'],
+            'Moonlit Asteroid': ['#0F2027', '#203A43', '#2C5364'],
+            'Crimson Tide': ['#642B73', '#C6426E'],
+            'Winter Neva': ['#a1c4fd', '#c2e9fb'],
+            'Emerald Water': ['#348F50', '#56B4D3'],
+            'Lemon Twist': ['#F7971E', '#FFD200'],
+            'Royal': ['#141E30', '#243B55'],
+            'Mango': ['#F09819', '#EDDE5D'],
+            'Peach': ['#ED4264', '#FFEDBC'],
+            'Ocean': ['#2E3192', '#1BFFFF'],
+            'Forest': ['#134E5E', '#71B280'],
+            'Purple': ['#8360c3', '#2ebf91'],
+            'Pink': ['#f093fb', '#f5576c'],
+            'Blue': ['#4facfe', '#00f2fe'],
+            'Green': ['#43e97b', '#38f9d7'],
+            'Orange': ['#fa709a', '#fee140'],
+            'Red': ['#ff0844', '#ffb199'],
+            'Violet': ['#667eea', '#764ba2'],
+            'Teal': ['#0ba360', '#3cba92'],
+            'Coral': ['#ff6e7f', '#bfe9ff'],
+            'Lavender': ['#e0c3fc', '#8ec5fc'],
+            'Mint': ['#a8edea', '#fed6e3'],
+            'Rose': ['#ffecd2', '#fcb69f'],
+            'Sky': ['#89f7fe', '#66a6ff'],
+            'Sunrise': ['#f6d365', '#fda085'],
+            'Twilight': ['#4c63d2', '#6a82fb'],
+            'Aurora': ['#00FF7F', '#00FFFF', '#0080FF', '#8000FF', '#FF00FF'],
+            'Rainbow': ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'],
+            'Fire': ['#FF0000', '#FF3300', '#FF6600', '#FF9900', '#FFCC00', '#FFFF00'],
+            'Neon': ['#FF00FF', '#00FFFF', '#FFFF00', '#FF00FF'],
+            'Gold': ['#FFD700', '#FFA500', '#FF8C00', '#FFD700'],
+            'Cosmic': ['#ff00cc', '#333399'],
+            'Tropical': ['#f12711', '#f5af19'],
+            'Ocean Breeze': ['#00c9ff', '#92fe9d'],
+            'Sunset Glow': ['#ee0979', '#ff6a00'],
+            'Mystic': ['#757f9a', '#d7dde8'],
+            'Electric': ['#00f260', '#0575e6'],
+            'Cherry': ['#eb3349', '#f45c43'],
+            'Plum': ['#667db6', '#0082c8', '#0082c8', '#667db6'],
+            'Minty': ['#00d2ff', '#3a7bd5'],
+            'Peachy': ['#ff9a9e', '#fecfef'],
+            'Berry': ['#8e2de2', '#4a00e0'],
+            'Citrus': ['#f2994a', '#f2c94c'],
+            'Lilac': ['#c471ed', '#f64f59'],
+            'Turquoise': ['#134e5e', '#71b280'],
+            'Crimson': ['#eb3349', '#f45c43'],
+            'Indigo': ['#4facfe', '#00f2fe'],
+            'Amber': ['#f093fb', '#f5576c'],
+            'Emerald': ['#11998e', '#38ef7d'],
+            'Ruby': ['#ee0979', '#ff6a00'],
+            'Sapphire': ['#2e3192', '#1bffff'],
+            'Topaz': ['#f12711', '#f5af19']
+        };
+
+        // Populate gradient dropdown
+        Object.keys(gradients).sort().forEach(gradientName => {
+            const option = document.createElement('option');
+            option.value = gradientName;
+            option.textContent = gradientName;
+            gradientSelect.appendChild(option);
+        });
+
+        // Update preview and apply gradient when selected
+        gradientSelect.addEventListener('change', (e) => {
+            const gradientName = e.target.value;
+            if (gradientName && gradients[gradientName]) {
+                const colors = gradients[gradientName];
+                // Copy colors to custom gradient for preview
+                customGradientColors = [...colors]; // Create a copy of the array
+                updateCustomGradientPreview();
+
+                // Automatically apply the gradient
+                if (messageInput.value) {
+                    const code = generateGradient(gradientName);
+                    resultTextarea.value = code;
+                    updatePreview(code);
+                    localStorage.setItem('lastGradient', gradientName);
+                }
+            } else if (!gradientName) {
+                // Clear preview when no gradient selected
+                customGradientColors = [];
+                updateCustomGradientPreview();
+                if (messageInput.value) {
+                    generateAndUpdate();
+                }
+            }
+        });
+
+        // Generate solid color code
+        function generateSolidColor() {
+            const text = messageInput.value;
+            if (!text) return '';
+            
+            let result = text;
+            const hexColor = rgbToHex(state.red, state.green, state.blue);
+
+            // Apply rotation first (per character)
+            if (state.rotationMode && state.rotationMode !== '') {
+                result = applyRotation(result);
+            }
+
+            // Apply formatting
+            if (state.bold) result = `<b>${result}</b>`;
+            if (state.italic) result = `<i>${result}</i>`;
+            if (state.underline) result = `<u>${result}</u>`;
+            if (state.fontSize) result = `<size=${state.fontSize}>${result}</size>`;
+
+            // Apply background color using <mark> tag with alpha (RRGGBBAA format)
+            if (state.hasBackground) {
+                const bgHexColor = rgbToHex(state.bgRed, state.bgGreen, state.bgBlue);
+                const alphaHex = state.bgAlpha.toString(16).padStart(2, '0').toUpperCase();
+                result = `<mark=${bgHexColor}${alphaHex}>${result}</mark>`;
+            }
+
+            // Apply alignment INSIDE color tag: <color=#FFFFFF><align=center>text</color>
+            if (state.alignment) {
+                result = `<color=${hexColor}><align=${state.alignment}>${result}</color>`;
+            } else {
+                result = `<color=${hexColor}>${result}</color>`;
+            }
+
+            return result;
+        }
+
+        // Generate Pikachu-style text using font tag
+        // Generate gradient code
+        function generateGradient(gradientName) {
+            const text = messageInput.value;
+            if (!text) return '';
+
+            const gradientColors = gradients[gradientName];
+            if (!gradientColors) return '';
+
+            const textArray = text.split('');
+            let result = '';
+
+            textArray.forEach((char, index) => {
+                const factor = textArray.length > 1 ? index / (textArray.length - 1) : 0;
+                const colorIndex = Math.floor(factor * (gradientColors.length - 1));
+                const nextColorIndex = Math.min(colorIndex + 1, gradientColors.length - 1);
+                const localFactor = (factor * (gradientColors.length - 1)) % 1;
+
+                const color1 = hexToRgb(gradientColors[colorIndex]);
+                const color2 = hexToRgb(gradientColors[nextColorIndex]);
+                const interpolated = interpolateColor(color1, color2, localFactor);
+                const hexColor = rgbToHex(interpolated.r, interpolated.g, interpolated.b);
+
+                let charResult = char;
+                
+                // Apply rotation per character
+                if (state.rotationMode && state.rotationMode !== '') {
+                    let rotationValue = state.rotationValue;
+                    if (state.rotationMode === 'alternating') {
+                        rotationValue = (index % 2 === 0) ? 0 : state.rotationValue;
+                    } else if (state.rotationMode === 'random') {
+                        rotationValue = Math.floor(Math.random() * 361);
+                    } else if (state.rotationMode === 'letterByLetter') {
+                        rotationValue = state.letterRotations[index] || 0;
+                    }
+                    charResult = `<rotate=${rotationValue}>${charResult}</rotate>`;
+                }
+                
+                if (state.bold) charResult = `<b>${charResult}</b>`;
+                if (state.italic) charResult = `<i>${charResult}</i>`;
+                if (state.underline) charResult = `<u>${charResult}</u>`;
+                if (state.fontSize) charResult = `<size=${state.fontSize}>${charResult}</size>`;
+
+                // Apply background color using <mark> tag with alpha (RRGGBBAA format)
+                if (state.hasBackground) {
+                    const bgHexColor = rgbToHex(state.bgRed, state.bgGreen, state.bgBlue);
+                    const alphaHex = state.bgAlpha.toString(16).padStart(2, '0').toUpperCase();
+                    charResult = `<mark=${bgHexColor}${alphaHex}>${charResult}</mark>`;
+                }
+
+                // For gradients, put alignment in the first character's color tag only
+                if (state.alignment && index === 0) {
+                    result += `<color=${hexColor}><align=${state.alignment}>${charResult}</color>`;
+                } else {
+                    result += `<color=${hexColor}>${charResult}</color>`;
+                }
+            });
+
+            return result;
+        }
+
+        // Update preview - Unity Rich Text to HTML converter
+        function updatePreview(code) {
+            if (!code) {
+                preview.innerHTML = '<span style="color: #888; font-style: italic;">Preview will appear here...</span>';
+                return;
+            }
+
+            // Convert Unity Rich Text to HTML by processing tags in order
+            // Unity processes tags from outside to inside, so we need to maintain that order
+            let html = code;
+            
+            // Process tags in the order Unity does - outer tags first
+            // Replace Unity tags with HTML equivalents, maintaining nesting
+            
+            // 1. Handle alignment (can be nested inside color)
+            html = html.replace(/<align=(left|center|right)>/gi, '<span style="display: block; text-align: $1; width: 100%;">');
+            html = html.replace(/<\/align>/gi, '</span>');
+            
+            // 2. Handle mark (background) - Unity applies this to content
+            html = html.replace(/<mark=#([0-9A-F]{8})>/gi, (match, hex) => {
+                const r = parseInt(hex.substr(0, 2), 16);
+                const g = parseInt(hex.substr(2, 2), 16);
+                const b = parseInt(hex.substr(4, 2), 16);
+                const a = parseInt(hex.substr(6, 2), 16) / 255;
+                return `<span style="background-color: rgba(${r}, ${g}, ${b}, ${a}); padding: 1px 2px; display: inline;">`;
+            });
+            html = html.replace(/<\/mark>/gi, '</span>');
+            
+            // 3. Handle color - Unity applies color to all nested content
+            // Default stroke for non-sized text (assuming default font size is 26px)
+            html = html.replace(/<color=#([0-9A-F]{6})>/gi, '<span style="color: #$1; -webkit-text-stroke: 4px black; text-stroke: 4px black; paint-order: stroke fill; font-weight: 700;">');
+            html = html.replace(/<\/color>/gi, '</span>');
+            
+            // 4. Handle size - Unity applies size to all nested content
+            // Calculate stroke width as 16.7% of font size for proper scaling
+            html = html.replace(/<size=(\d+)>/gi, (match, size) => {
+                const strokeWidth = Math.round(parseInt(size) * 0.167);
+                return `<span style="font-size: ${size}px; line-height: 1.2; display: inline-block; -webkit-text-stroke: ${strokeWidth}px black; text-stroke: ${strokeWidth}px black;">`;
+            });
+            html = html.replace(/<\/size>/gi, '</span>');
+            
+            // 5. Handle formatting tags
+            html = html.replace(/<b>/gi, '<strong style="font-weight: bold;">');
+            html = html.replace(/<\/b>/gi, '</strong>');
+            html = html.replace(/<i>/gi, '<em style="font-style: italic;">');
+            html = html.replace(/<\/i>/gi, '</em>');
+            html = html.replace(/<u>/gi, '<u style="text-decoration: underline;">');
+            html = html.replace(/<\/u>/gi, '</u>');
+            
+            // 6. Handle font tag
+            html = html.replace(/<font="([^"]+)">/gi, '<span style="font-family: \'$1\', sans-serif; font-weight: bold;">');
+            html = html.replace(/<\/font>/gi, '</span>');
+            
+            // 7. Handle rotate tag
+            html = html.replace(/<rotate=(\d+)>/gi, '<span style="display: inline-block; transform: rotate($1deg);">');
+            html = html.replace(/<\/rotate>/gi, '</span>');
+            
+            preview.innerHTML = html || '<span style="color: #888; font-style: italic;">Preview will appear here...</span>';
+        }
+
+
+        // Copy button handler
+        copyBtn.addEventListener('click', () => {
+            resultTextarea.select();
+            document.execCommand('copy');
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = 'Copy';
+            }, 2000);
+        });
+
+        // Collapsible sections functionality
+        const sections = document.querySelectorAll('.section:not(.section-always-open)');
+        sections.forEach(section => {
+            const header = section.querySelector('h3');
+            if (header) {
+                header.addEventListener('click', () => {
+                    section.classList.toggle('collapsed');
+                });
+            }
+        });
+
+        // Collapse All button
+        collapseAllBtn.addEventListener('click', () => {
+            sections.forEach(section => {
+                section.classList.add('collapsed');
+            });
+        });
+
+        // Expand All button
+        expandAllBtn.addEventListener('click', () => {
+            sections.forEach(section => {
+                section.classList.remove('collapsed');
+            });
+        });
+
+        // Auto-generate on input change - convert HTML to Unity Rich Text
+        messageInput.addEventListener('input', () => {
+            const input = messageInput.value.trim();
+            if (!input) {
+                resultTextarea.value = '';
+                preview.innerHTML = '<span style="color: #888; font-style: italic;">Preview will appear here...</span>';
+                return;
+            }
+            
+            // Check if input contains HTML tags
+            const containsHtml = /<[^>]+>/.test(input);
+            
+            if (containsHtml) {
+                // Convert HTML to Unity Rich Text
+                const unityRichText = htmlToUnityRichText(input);
+                resultTextarea.value = unityRichText;
+                updatePreview(unityRichText);
+            } else {
+                // Plain text - use the formatting controls
+                // Check if gradient was previously used
+                const hasGradient = resultTextarea.value && resultTextarea.value.includes('<color=#') && 
+                    resultTextarea.value.split('<color=').length > 2;
+                
+                if (hasGradient) {
+                    // Find which gradient was used (simplified - regenerate with last used)
+                    const lastGradient = localStorage.getItem('lastGradient') || 'Rainbow';
+                    if (lastGradient === 'custom') {
+                        const code = generateCustomGradient();
+                        if (code) {
+                            resultTextarea.value = code;
+                            updatePreview(code);
+                        }
+                    } else if (gradients[lastGradient]) {
+                        const code = generateGradient(lastGradient);
+                        resultTextarea.value = code;
+                        updatePreview(code);
+                    } else {
+                        const code = generateSolidColor();
+                        resultTextarea.value = code;
+                        updatePreview(code);
+                    }
+                } else {
+                    const code = generateSolidColor();
+                    resultTextarea.value = code;
+                    updatePreview(code);
+                }
+            }
+        });
+
+
+        // Initialize with default (no colors, white)
+        renderColorStops();
+        updateCustomGradientPreview();
+        updateColorCount();
+        updateColorPreview(); // Update color preview to show default white
+        const defaultCode = generateSolidColor();
+        resultTextarea.value = defaultCode;
+        updatePreview(defaultCode);
+    </script>
+</body>
+</html>
