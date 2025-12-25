@@ -856,8 +856,7 @@
                 <div class="section-content">
                     <div id="preview" contenteditable="true" data-placeholder="Input your message"></div>
                     <div style="display: flex; gap: 12px; margin-top: 20px;">
-                        <button type="button" class="gradient-btn" id="collapseAllBtn" style="flex: 1;">Collapse All</button>
-                        <button type="button" class="gradient-btn" id="expandAllBtn" style="flex: 1;">Expand All</button>
+                        <button type="button" class="gradient-btn" id="resetBtn" style="flex: 1;">Reset</button>
                     </div>
                 </div>
             </div>
@@ -1186,8 +1185,7 @@
 
         // DOM elements
         const messageInput = document.getElementById('preview');
-        const collapseAllBtn = document.getElementById('collapseAllBtn');
-        const expandAllBtn = document.getElementById('expandAllBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const boldBtn = document.getElementById('boldBtn');
         const italicBtn = document.getElementById('italicBtn');
         const underlineBtn = document.getElementById('underlineBtn');
@@ -3521,17 +3519,93 @@
             }
         });
 
-        // Collapse All button
-        collapseAllBtn.addEventListener('click', () => {
+        // Reset button - reset everything to initial state
+        resetBtn.addEventListener('click', () => {
+            // Reset state object
+            state.bold = false;
+            state.italic = false;
+            state.underline = false;
+            state.strikethrough = false;
+            state.superscript = false;
+            state.fontSize = '';
+            state.charSpacing = 0;
+            state.alignment = '';
+            state.red = 255;
+            state.green = 255;
+            state.blue = 255;
+            state.bgRed = 0;
+            state.bgGreen = 0;
+            state.bgBlue = 0;
+            state.bgAlpha = 156;
+            state.hasBackground = false;
+            state.rotationMode = '';
+            state.rotationValue = 0;
+            state.letterRotations = [];
+            
+            // Reset message input
+            messageInput.innerHTML = '';
+            messageInput.classList.add('show-placeholder');
+            
+            // Reset result textarea
+            resultTextarea.value = '';
+            
+            // Reset formatting buttons
+            boldBtn.classList.remove('active');
+            italicBtn.classList.remove('active');
+            underlineBtn.classList.remove('active');
+            strikethroughBtn.classList.remove('active');
+            superscriptBtn.classList.remove('active');
+            
+            // Reset dropdowns
+            fontSizeInput.value = '';
+            charSpacingInput.value = '0';
+            
+            // Reset alignment buttons
+            alignLeftBtn.classList.remove('active');
+            alignCenterBtn.classList.remove('active');
+            alignRightBtn.classList.remove('active');
+            
+            // Reset gradient
+            gradientSelect.value = '';
+            customGradientColors = [];
+            renderColorStops();
+            updateCustomGradientPreview();
+            updateColorCount();
+            localStorage.setItem('lastGradient', '');
+            
+            // Reset color previews
+            updateColorPreview();
+            updateBgColorPreview();
+            updateColorPickerButtonText();
+            
+            // Reset color picker panels
+            const colorPickerPanel = document.getElementById('colorPickerPanel');
+            const bgColorPickerPanel = document.getElementById('bgColorPickerPanel');
+            if (colorPickerPanel) {
+                colorPickerPanel.classList.remove('expanded');
+                colorPickerPanel.style.display = 'none';
+            }
+            if (bgColorPickerPanel) {
+                bgColorPickerPanel.classList.remove('expanded');
+                bgColorPickerPanel.style.display = 'none';
+            }
+            
+            // Reset rotation
+            const rotationSlider = document.getElementById('rotationSlider');
+            const rotationInput = document.getElementById('rotationInput');
+            const rotationMode = document.getElementById('rotationMode');
+            const singleRotationControls = document.getElementById('singleRotationControls');
+            const letterByLetterControls = document.getElementById('letterByLetterControls');
+            if (rotationSlider) rotationSlider.value = '0';
+            if (rotationInput) rotationInput.value = '0';
+            if (rotationMode) rotationMode.value = '';
+            if (letterRotationSliders) letterRotationSliders.innerHTML = '';
+            if (singleRotationControls) singleRotationControls.style.display = 'none';
+            if (letterByLetterControls) letterByLetterControls.style.display = 'none';
+            
+            // Collapse all sections
             sections.forEach(section => {
                 section.classList.add('collapsed');
-            });
-        });
-
-        // Expand All button
-        expandAllBtn.addEventListener('click', () => {
-            sections.forEach(section => {
-                section.classList.remove('collapsed');
             });
         });
 
