@@ -1374,6 +1374,36 @@
                 padding: 10px;
             }
 
+            /* Rotation mode buttons - mobile styles */
+            #rotationModeButtons {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 8px !important;
+                width: 100% !important;
+            }
+
+            .rotation-mode-btn {
+                width: 100% !important;
+                min-height: 44px !important;
+                padding: 12px 16px !important;
+                font-size: 14px !important;
+                border-radius: 8px !important;
+                text-align: center !important;
+            }
+
+            /* On larger mobile screens, allow buttons to be side by side */
+            @media screen and (min-width: 480px) {
+                #rotationModeButtons {
+                    flex-direction: row !important;
+                    flex-wrap: wrap !important;
+                }
+
+                .rotation-mode-btn {
+                    flex: 1 1 auto !important;
+                    min-width: 140px !important;
+                }
+            }
+
             /* Material effect controls */
             .material-effect-controls {
                 gap: 12px;
@@ -1872,17 +1902,24 @@
                 <h3>Letter Rotation<span class="section-toggle"></span></h3>
                 <div class="section-content">
                     <div style="display: flex; flex-direction: column; gap: 15px;">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <label style="min-width: 80px; margin: 0;">Mode:</label>
-                            <select id="rotationMode" style="flex: 1; min-height: 48px; background-color: #2a2a2a; color: white; border: 2px solid #444; border-radius: 8px; font-size: 16px;">
-                                <option value="">Disabled</option>
-                                <option value="all">Apply to all letters</option>
-                                <option value="alternating">Alternating</option>
-                                <option value="random">Random per letter</option>
-                                <option value="letterByLetter">Letter by letter</option>
-                            </select>
+                        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                            <div id="rotationModeButtons" style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1;">
+                                <button type="button" class="rotation-mode-btn" data-mode="" style="background-color: #2a2a2a; color: white; border: 2px solid #444; border-radius: 8px; padding: 12px 16px; font-size: 14px; cursor: pointer; transition: all 0.2s;">Disabled</button>
+                                <button type="button" class="rotation-mode-btn" data-mode="all" style="background-color: #2a2a2a; color: white; border: 2px solid #444; border-radius: 8px; padding: 12px 16px; font-size: 14px; cursor: pointer; transition: all 0.2s;">Apply to all letters</button>
+                                <button type="button" class="rotation-mode-btn" data-mode="alternating" style="background-color: #2a2a2a; color: white; border: 2px solid #444; border-radius: 8px; padding: 12px 16px; font-size: 14px; cursor: pointer; transition: all 0.2s;">Alternating</button>
+                                <button type="button" class="rotation-mode-btn" data-mode="random" style="background-color: #2a2a2a; color: white; border: 2px solid #444; border-radius: 8px; padding: 12px 16px; font-size: 14px; cursor: pointer; transition: all 0.2s;">Random per letter</button>
+                                <button type="button" class="rotation-mode-btn" data-mode="letterByLetter" style="background-color: #2a2a2a; color: white; border: 2px solid #444; border-radius: 8px; padding: 12px 16px; font-size: 14px; cursor: pointer; transition: all 0.2s;">Letter by letter</button>
+                            </div>
                             <button type="button" class="gradient-btn" id="resetRotationBtn" style="min-width: 120px;">Clear</button>
                         </div>
+                        <!-- Hidden select for backward compatibility -->
+                        <select id="rotationMode" style="display: none;">
+                            <option value="">Disabled</option>
+                            <option value="all">Apply to all letters</option>
+                            <option value="alternating">Alternating</option>
+                            <option value="random">Random per letter</option>
+                            <option value="letterByLetter">Letter by letter</option>
+                        </select>
                         <div id="singleRotationControls" style="display: none; flex-direction: column; gap: 15px;">
                             <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
                                 <label style="min-width: 80px; margin: 0;">Rotation:</label>
@@ -1891,8 +1928,8 @@
                                 <span style="min-width: 30px; text-align: center; font-weight: 500;">°</span>
                             </div>
                         </div>
-                        <div id="letterByLetterControls" style="display: none; flex-direction: column; gap: 10px;">
-                            <div id="letterRotationSliders" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div id="letterByLetterControls" style="display: none; flex-direction: column; gap: 15px;">
+                            <div id="letterRotationSliders" style="display: flex; flex-direction: column; gap: 15px;">
                                 <!-- Letter-by-letter sliders will be dynamically generated here -->
                             </div>
                         </div>
@@ -2919,253 +2956,6 @@
             if (text.length > currentLength) {
                 // Add new letters with default rotation 0
                 for (let i = currentLength; i < text.length; i++) {
-            colorPicker.value = currentHex;
-            visualContainer.appendChild(colorPicker);
-
-            // RGB + Alpha Controls
-            const controlsContainer = document.createElement('div');
-            controlsContainer.className = 'color-picker-controls';
-
-            const rgbContainer = document.createElement('div');
-            rgbContainer.className = 'color-picker-rgb';
-
-            let currentColor = { r: state.bgRed, g: state.bgGreen, b: state.bgBlue, a: state.bgAlpha };
-
-            function updateColorFromRGB() {
-                const hex = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
-                colorPicker.value = hex;
-                hexInput.value = hex;
-                colorPicker.style.background = hex;
-                // Update preview
-                const alpha = currentColor.a / 255;
-                bgColorPreview.style.background = `rgba(${currentColor.r}, ${currentColor.g}, ${currentColor.b}, ${alpha})`;
-                bgColorPreview.style.border = '2px solid #444';
-            }
-
-            function updateColorFromHex(hex) {
-                const rgb = hexToRgb(hex);
-                if (rgb) {
-                    currentColor.r = rgb.r;
-                    currentColor.g = rgb.g;
-                    currentColor.b = rgb.b;
-                    redSlider.value = rgb.r;
-                    greenSlider.value = rgb.g;
-                    blueSlider.value = rgb.b;
-                    redValue.value = rgb.r;
-                    greenValue.value = rgb.g;
-                    blueValue.value = rgb.b;
-                    colorPicker.value = hex;
-                    colorPicker.style.background = hex;
-                    updateColorFromRGB();
-                }
-            }
-
-            // Red slider
-            const redItem = document.createElement('div');
-            redItem.className = 'color-picker-rgb-item';
-            const redLabel = document.createElement('label');
-            redLabel.textContent = 'R';
-            const redSlider = document.createElement('input');
-            redSlider.type = 'range';
-            redSlider.min = '0';
-            redSlider.max = '255';
-            redSlider.value = state.bgRed.toString();
-            const redValue = document.createElement('input');
-            redValue.type = 'number';
-            redValue.min = '0';
-            redValue.max = '255';
-            redValue.value = state.bgRed.toString();
-            redSlider.addEventListener('input', (e) => {
-                currentColor.r = parseInt(e.target.value);
-                redValue.value = currentColor.r;
-                updateColorFromRGB();
-            });
-            redValue.addEventListener('input', (e) => {
-                currentColor.r = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
-                redSlider.value = currentColor.r;
-                updateColorFromRGB();
-            });
-            redItem.appendChild(redLabel);
-            redItem.appendChild(redSlider);
-            redItem.appendChild(redValue);
-            rgbContainer.appendChild(redItem);
-
-            // Green slider
-            const greenItem = document.createElement('div');
-            greenItem.className = 'color-picker-rgb-item';
-            const greenLabel = document.createElement('label');
-            greenLabel.textContent = 'G';
-            const greenSlider = document.createElement('input');
-            greenSlider.type = 'range';
-            greenSlider.min = '0';
-            greenSlider.max = '255';
-            greenSlider.value = state.bgGreen.toString();
-            const greenValue = document.createElement('input');
-            greenValue.type = 'number';
-            greenValue.min = '0';
-            greenValue.max = '255';
-            greenValue.value = state.bgGreen.toString();
-            greenSlider.addEventListener('input', (e) => {
-                currentColor.g = parseInt(e.target.value);
-                greenValue.value = currentColor.g;
-                updateColorFromRGB();
-            });
-            greenValue.addEventListener('input', (e) => {
-                currentColor.g = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
-                greenSlider.value = currentColor.g;
-                updateColorFromRGB();
-            });
-            greenItem.appendChild(greenLabel);
-            greenItem.appendChild(greenSlider);
-            greenItem.appendChild(greenValue);
-            rgbContainer.appendChild(greenItem);
-
-            // Blue slider
-            const blueItem = document.createElement('div');
-            blueItem.className = 'color-picker-rgb-item';
-            const blueLabel = document.createElement('label');
-            blueLabel.textContent = 'B';
-            const blueSlider = document.createElement('input');
-            blueSlider.type = 'range';
-            blueSlider.min = '0';
-            blueSlider.max = '255';
-            blueSlider.value = state.bgBlue.toString();
-            const blueValue = document.createElement('input');
-            blueValue.type = 'number';
-            blueValue.min = '0';
-            blueValue.max = '255';
-            blueValue.value = state.bgBlue.toString();
-            blueSlider.addEventListener('input', (e) => {
-                currentColor.b = parseInt(e.target.value);
-                blueValue.value = currentColor.b;
-                updateColorFromRGB();
-            });
-            blueValue.addEventListener('input', (e) => {
-                currentColor.b = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
-                blueSlider.value = currentColor.b;
-                updateColorFromRGB();
-            });
-            blueItem.appendChild(blueLabel);
-            blueItem.appendChild(blueSlider);
-            blueItem.appendChild(blueValue);
-            rgbContainer.appendChild(blueItem);
-
-            // Alpha slider
-            const alphaItem = document.createElement('div');
-            alphaItem.className = 'color-picker-rgb-item';
-            const alphaLabel = document.createElement('label');
-            alphaLabel.textContent = 'A';
-            const alphaSlider = document.createElement('input');
-            alphaSlider.type = 'range';
-            alphaSlider.min = '0';
-            alphaSlider.max = '255';
-            alphaSlider.value = state.bgAlpha.toString();
-            const alphaValue = document.createElement('input');
-            alphaValue.type = 'number';
-            alphaValue.min = '0';
-            alphaValue.max = '255';
-            alphaValue.value = state.bgAlpha.toString();
-            alphaSlider.addEventListener('input', (e) => {
-                currentColor.a = parseInt(e.target.value);
-                alphaValue.value = currentColor.a;
-                updateColorFromRGB();
-            });
-            alphaValue.addEventListener('input', (e) => {
-                currentColor.a = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
-                alphaSlider.value = currentColor.a;
-                updateColorFromRGB();
-            });
-            alphaItem.appendChild(alphaLabel);
-            alphaItem.appendChild(alphaSlider);
-            alphaItem.appendChild(alphaValue);
-            rgbContainer.appendChild(alphaItem);
-
-            controlsContainer.appendChild(rgbContainer);
-
-            // Hex input
-            const hexContainer = document.createElement('div');
-            hexContainer.className = 'color-picker-hex';
-            const hexLabel = document.createElement('label');
-            hexLabel.textContent = 'Hex:';
-            hexLabel.style.marginBottom = '5px';
-            const hexInput = document.createElement('input');
-            hexInput.type = 'text';
-            hexInput.value = currentHex;
-            hexInput.placeholder = '#FF0000';
-            hexInput.pattern = '^#[0-9A-Fa-f]{6}$';
-            hexInput.addEventListener('input', (e) => {
-                let value = e.target.value.toUpperCase();
-                if (!value.startsWith('#')) {
-                    value = '#' + value;
-                }
-                if (/^#[0-9A-F]{6}$/.test(value)) {
-                    updateColorFromHex(value);
-                }
-                hexInput.value = value;
-            });
-            hexContainer.appendChild(hexLabel);
-            hexContainer.appendChild(hexInput);
-            controlsContainer.appendChild(hexContainer);
-
-            mainContainer.appendChild(visualContainer);
-            mainContainer.appendChild(controlsContainer);
-            popup.appendChild(mainContainer);
-
-            // Action buttons
-            const actionsContainer = document.createElement('div');
-            actionsContainer.className = 'color-picker-actions';
-
-            const cancelBtn = document.createElement('button');
-            cancelBtn.textContent = 'Cancel';
-            cancelBtn.addEventListener('click', () => {
-                popup.remove();
-                document.removeEventListener('click', closePopup);
-            });
-
-            const applyBtn = document.createElement('button');
-            applyBtn.className = 'btn-primary';
-            applyBtn.textContent = 'Apply';
-            applyBtn.addEventListener('click', () => {
-                state.bgRed = currentColor.r;
-                state.bgGreen = currentColor.g;
-                state.bgBlue = currentColor.b;
-                state.bgAlpha = currentColor.a;
-                state.hasBackground = true;
-                updateBgColorPreview();
-                if (messageInput.textContent) {
-                    generateAndUpdate();
-                }
-                popup.remove();
-                document.removeEventListener('click', closePopup);
-            });
-
-            actionsContainer.appendChild(cancelBtn);
-            actionsContainer.appendChild(applyBtn);
-            popup.appendChild(actionsContainer);
-
-            // Update when native color picker changes
-            colorPicker.addEventListener('change', (e) => {
-                updateColorFromHex(e.target.value);
-            });
-
-            // Close popup when clicking outside
-            const closePopup = (event) => {
-                if (!popup.contains(event.target) && event.target !== bgColorPickerBtn && !bgColorPickerBtn.contains(event.target)) {
-                    popup.remove();
-                    document.removeEventListener('click', closePopup);
-                }
-            };
-
-            setTimeout(() => {
-                document.addEventListener('click', closePopup);
-            }, 100);
-
-            // Append to body and position relative to button
-            document.body.appendChild(popup);
-            
-            // Position popup above the button
-            const buttonRect = bgColorPickerBtn.getBoundingClientRect();
-            popup.style.left = buttonRect.left + 'px';
                     state.letterRotations.push(0);
                 }
             } else if (text.length < currentLength) {
@@ -3176,22 +2966,30 @@
             // Clear existing sliders
             letterRotationSliders.innerHTML = '';
             
+            // If no text, show a message
+            if (!text || text.length === 0) {
+                const message = document.createElement('div');
+                message.style.padding = '15px';
+                message.style.textAlign = 'center';
+                message.style.color = '#999';
+                message.style.fontSize = '14px';
+                message.textContent = 'Enter text above to see letter-by-letter rotation controls';
+                letterRotationSliders.appendChild(message);
+                return;
+            }
+            
             // Create slider for each letter
             text.split('').forEach((char, index) => {
                 const sliderContainer = document.createElement('div');
                 sliderContainer.style.display = 'flex';
                 sliderContainer.style.alignItems = 'center';
-                sliderContainer.style.gap = '12px';
-                sliderContainer.style.padding = '8px';
-                sliderContainer.style.background = '#1e1e2e';
-                sliderContainer.style.borderRadius = '6px';
+                sliderContainer.style.gap = '15px';
+                sliderContainer.style.flexWrap = 'wrap';
                 
                 const charLabel = document.createElement('label');
-                charLabel.textContent = `"${char}"`;
-                charLabel.style.minWidth = '40px';
+                charLabel.textContent = `"${char}":`;
+                charLabel.style.minWidth = '80px';
                 charLabel.style.margin = '0';
-                charLabel.style.fontWeight = '600';
-                charLabel.style.fontSize = '16px';
                 
                 const slider = document.createElement('input');
                 slider.type = 'range';
@@ -3200,6 +2998,7 @@
                 slider.value = state.letterRotations[index] || 0;
                 slider.step = '1';
                 slider.style.flex = '1';
+                slider.style.minWidth = '150px';
                 slider.className = 'letter-rotation-slider';
                 slider.dataset.index = index;
                 
@@ -3208,23 +3007,17 @@
                 valueInput.min = '0';
                 valueInput.max = '360';
                 valueInput.value = state.letterRotations[index] || 0;
-                valueInput.style.width = '80px';
-                valueInput.style.padding = '10px';
-                valueInput.style.minHeight = '44px';
+                valueInput.style.width = '100px';
+                valueInput.style.padding = '14px';
+                valueInput.style.minHeight = '48px';
                 valueInput.style.background = '#2a2a2a';
                 valueInput.style.color = 'white';
                 valueInput.style.border = '2px solid #444';
-                valueInput.style.borderRadius = '6px';
-                valueInput.style.fontSize = '14px';
+                valueInput.style.borderRadius = '8px';
+                valueInput.style.fontSize = '16px';
                 valueInput.style.textAlign = 'center';
                 valueInput.className = 'letter-rotation-input';
                 valueInput.dataset.index = index;
-                
-                const degreeLabel = document.createElement('span');
-                degreeLabel.textContent = '°';
-                degreeLabel.style.minWidth = '20px';
-                degreeLabel.style.textAlign = 'center';
-                degreeLabel.style.fontWeight = '500';
                 
                 // Event listeners
                 slider.addEventListener('input', (e) => {
@@ -3252,20 +3045,107 @@
                 sliderContainer.appendChild(charLabel);
                 sliderContainer.appendChild(slider);
                 sliderContainer.appendChild(valueInput);
-                sliderContainer.appendChild(degreeLabel);
                 letterRotationSliders.appendChild(sliderContainer);
             });
         }
 
-        // Rotation controls
-        rotationMode.addEventListener('change', (e) => {
-            state.rotationMode = e.target.value;
+        // Function to update rotation mode button active states
+        function updateRotationModeButtons() {
+            const buttons = document.querySelectorAll('.rotation-mode-btn');
+            buttons.forEach(btn => {
+                const mode = btn.getAttribute('data-mode');
+                if (mode === state.rotationMode) {
+                    btn.style.backgroundColor = '#7c3aed';
+                    btn.style.borderColor = '#7c3aed';
+                    btn.style.color = 'white';
+                } else {
+                    btn.style.backgroundColor = '#2a2a2a';
+                    btn.style.borderColor = '#444';
+                    btn.style.color = 'white';
+                }
+            });
+        }
+
+        // Function to handle rotation mode change
+        function handleRotationModeChange(newMode) {
+            console.log('handleRotationModeChange called with mode:', newMode);
+            state.rotationMode = newMode;
+            
+            // Update select for backward compatibility
+            rotationMode.value = newMode;
+            
+            // Update button active states
+            updateRotationModeButtons();
             
             // Show/hide appropriate controls
             if (state.rotationMode === 'letterByLetter') {
+                console.log('Setting up letterByLetter mode');
                 singleRotationControls.style.display = 'none';
-                letterByLetterControls.style.display = 'flex';
+                
+                // Find the Letter Rotation section - try multiple methods
+                let letterRotationSection = letterByLetterControls.closest('.section');
+                if (!letterRotationSection) {
+                    // Try finding by ID or class
+                    letterRotationSection = document.querySelector('.section:has(#letterByLetterControls)');
+                }
+                if (!letterRotationSection) {
+                    // Find by h3 text
+                    const sections = document.querySelectorAll('.section');
+                    sections.forEach(section => {
+                        const h3 = section.querySelector('h3');
+                        if (h3 && h3.textContent.trim().includes('Letter Rotation')) {
+                            letterRotationSection = section;
+                        }
+                    });
+                }
+                
+                console.log('Found section:', letterRotationSection);
+                
+                // Expand the section if it's collapsed
+                if (letterRotationSection) {
+                    console.log('Expanding section');
+                    
+                    // Try clicking the header to expand (simulate user click)
+                    const header = letterRotationSection.querySelector('h3');
+                    if (header && letterRotationSection.classList.contains('collapsed')) {
+                        console.log('Simulating header click to expand');
+                        header.click();
+                    }
+                    
+                    // Remove collapsed class
+                    letterRotationSection.classList.remove('collapsed');
+                    
+                    // Get section content
+                    const sectionContent = letterRotationSection.querySelector('.section-content');
+                    console.log('Section content:', sectionContent);
+                    
+                    if (sectionContent) {
+                        // Completely override all collapsed styles
+                        sectionContent.style.cssText = 'max-height: 5000px !important; opacity: 1 !important; display: block !important; visibility: visible !important; margin-top: inherit !important; margin-bottom: inherit !important; padding-top: inherit !important; padding-bottom: inherit !important; overflow: visible !important;';
+                    }
+                    
+                    // Force reflow multiple times to ensure it takes effect
+                    void letterRotationSection.offsetHeight;
+                    void sectionContent?.offsetHeight;
+                    requestAnimationFrame(() => {
+                        void letterRotationSection.offsetHeight;
+                    });
+                } else {
+                    console.error('Could not find Letter Rotation section!');
+                }
+                
+                // Force display to flex - multiple methods
+                letterByLetterControls.style.cssText = 'display: flex !important; visibility: visible !important; opacity: 1 !important; flex-direction: column !important; gap: 15px !important;';
+                
+                // Also ensure the sliders container is visible
+                if (letterRotationSliders) {
+                    letterRotationSliders.style.cssText = 'display: flex !important; visibility: visible !important; opacity: 1 !important; flex-direction: column !important; gap: 15px !important;';
+                }
+                
+                console.log('Updating sliders');
+                // Update sliders
                 updateLetterRotationSliders();
+                console.log('Sliders updated');
             } else if (state.rotationMode && state.rotationMode !== '') {
                 singleRotationControls.style.display = 'flex';
                 letterByLetterControls.style.display = 'none';
@@ -3277,6 +3157,50 @@
             if (messageInput.textContent) {
                 generateAndUpdate();
             }
+        }
+
+        // Rotation mode button clicks - use event delegation for reliability
+        const rotationModeButtonsContainer = document.getElementById('rotationModeButtons');
+        console.log('rotationModeButtonsContainer:', rotationModeButtonsContainer);
+        if (rotationModeButtonsContainer) {
+            rotationModeButtonsContainer.addEventListener('click', (e) => {
+                console.log('Button container clicked:', e.target);
+                // Get mode from the button that was clicked (handle clicks on child elements)
+                const button = e.target.closest('.rotation-mode-btn');
+                if (button) {
+                    const mode = button.getAttribute('data-mode');
+                    console.log('Button clicked, mode:', mode);
+                    if (mode !== null) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleRotationModeChange(mode);
+                    }
+                }
+            });
+        } else {
+            console.error('rotationModeButtonsContainer not found!');
+        }
+        
+        // Also attach directly to buttons as fallback
+        const rotationModeButtons = document.querySelectorAll('.rotation-mode-btn');
+        console.log('Found rotation mode buttons:', rotationModeButtons.length);
+        rotationModeButtons.forEach((btn, index) => {
+            console.log(`Attaching listener to button ${index}:`, btn);
+            btn.addEventListener('click', (e) => {
+                console.log('Direct button click:', e.target);
+                const mode = e.target.closest('.rotation-mode-btn')?.getAttribute('data-mode') || e.target.getAttribute('data-mode');
+                console.log('Direct button mode:', mode);
+                if (mode !== null) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleRotationModeChange(mode);
+                }
+            });
+        });
+
+        // Rotation controls (select for backward compatibility)
+        rotationMode.addEventListener('change', (e) => {
+            handleRotationModeChange(e.target.value);
         });
 
         // Reset rotation button
@@ -3293,6 +3217,9 @@
             singleRotationControls.style.display = 'none';
             letterByLetterControls.style.display = 'none';
             letterRotationSliders.innerHTML = '';
+            
+            // Update button active states
+            updateRotationModeButtons();
             
             // Regenerate if there's a message
             if (messageInput.textContent) {
@@ -4296,6 +4223,9 @@
             state.rotationValue = 0;
             state.letterRotations = [];
             
+            // Update rotation mode buttons
+            updateRotationModeButtons();
+            
             // Reset message input
             messageInput.innerHTML = '';
             messageInput.classList.add('show-placeholder');
@@ -4357,6 +4287,9 @@
             if (singleRotationControls) singleRotationControls.style.display = 'none';
             if (letterByLetterControls) letterByLetterControls.style.display = 'none';
             
+            // Update rotation mode buttons
+            updateRotationModeButtons();
+            
             // Collapse all sections
             sections.forEach(section => {
                 section.classList.add('collapsed');
@@ -4370,6 +4303,7 @@
         updateColorCount();
         updateColorPreview(); // Update color preview to show default white
         updateColorPickerButtonText(); // Set initial button text
+        updateRotationModeButtons(); // Initialize rotation mode button states
     </script>
 </body>
 </html>
