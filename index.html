@@ -17,15 +17,60 @@
             color: #ffffff;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+        }
+        
+        /* Background images layer */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                url('background1.png'),
+                url('background2.png');
+            background-position: 
+                left center,
+                right center;
+            background-size: 
+                50% 100%,
+                50% 100%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Dark overlay to keep panels readable - lighter so UI is visible */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, 
+                    rgba(30, 30, 46, 0.3) 0%, 
+                    rgba(30, 30, 46, 0.25) 48%, 
+                    rgba(45, 45, 68, 0.25) 52%, 
+                    rgba(45, 45, 68, 0.3) 100%),
+                radial-gradient(ellipse at center, transparent 0%, rgba(30, 30, 46, 0.15) 100%);
+            pointer-events: none;
+            z-index: 1;
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
-            background: rgba(30, 30, 46, 0.8);
+            background: rgba(30, 30, 46, 0.98);
             border-radius: 12px;
             padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+            position: relative;
+            z-index: 2;
         }
 
         h1 {
@@ -436,6 +481,7 @@
             border-radius: 8px;
             border: 2px solid #444;
         }
+
 
         #preview {
             padding: 20px;
@@ -868,6 +914,34 @@
                 padding: 10px !important;
                 overflow-x: hidden !important;
                 overflow-y: auto !important;
+                position: relative;
+                /* Remove body background gradient on mobile so images show through */
+                background: transparent !important;
+            }
+            
+            /* Fix background images for mobile - show behind panels */
+            body::before {
+                background-attachment: scroll !important;
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                height: 100vh;
+                background-size: 50% 100%, 50% 100%;
+                background-position: left center, right center;
+                background-repeat: no-repeat;
+            }
+            
+            body::after {
+                /* Remove overlay on mobile so background images are completely clear */
+                display: none !important;
+            }
+            
+            /* Make container background fully transparent on mobile so background images show through */
+            .container {
+                background: transparent !important;
             }
 
             form {
@@ -2022,6 +2096,41 @@
         };
 
         // DOM elements
+        // Fix mobile background to cover full document height
+        function updateMobileBackgroundHeight() {
+            if (window.innerWidth <= 767) {
+                const docHeight = Math.max(
+                    document.body.scrollHeight,
+                    document.body.offsetHeight,
+                    document.documentElement.clientHeight,
+                    document.documentElement.scrollHeight,
+                    document.documentElement.offsetHeight
+                );
+                
+                // Update CSS custom property for pseudo-elements
+                document.documentElement.style.setProperty('--mobile-bg-height', `${docHeight}px`);
+            } else {
+                // Reset on desktop
+                document.documentElement.style.removeProperty('--mobile-bg-height');
+            }
+        }
+        
+        // Update on load, resize, and content changes
+        updateMobileBackgroundHeight();
+        window.addEventListener('resize', updateMobileBackgroundHeight);
+        window.addEventListener('scroll', updateMobileBackgroundHeight);
+        
+        // Update when content changes (sections expand/collapse, etc.)
+        const observer = new MutationObserver(() => {
+            setTimeout(updateMobileBackgroundHeight, 100);
+        });
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true, 
+            attributes: true,
+            attributeFilter: ['style', 'class']
+        });
+        
         const messageInput = document.getElementById('preview');
         const resetBtn = document.getElementById('resetBtn');
         const boldBtn = document.getElementById('boldBtn');
@@ -2247,8 +2356,8 @@
             html = html.replace(/<cspace=([0-9.-]+)em>/gi, '<span style="letter-spacing: $1em;">');
             html = html.replace(/<\/cspace>/gi, '</span>');
             
-            // 6. Handle formatting tags - bold needs thicker white fill, not thicker outline
-            html = html.replace(/<b>/gi, '<strong style="font-weight: 900; -webkit-text-stroke: 4px black; text-stroke: 4px black; color: #FFFFFF; text-shadow: 0 0 0 #FFFFFF, 0.5px 0 0 #FFFFFF, -0.5px 0 0 #FFFFFF, 0 0.5px 0 #FFFFFF, 0 -0.5px 0 #FFFFFF;">');
+            // 6. Handle formatting tags - bold needs thicker fill, color inherits from parent
+            html = html.replace(/<b>/gi, '<strong style="font-weight: 900; -webkit-text-stroke: 4px black; text-stroke: 4px black; color: inherit; text-shadow: 0 0 0 currentColor, 0.5px 0 0 currentColor, -0.5px 0 0 currentColor, 0 0.5px 0 currentColor, 0 -0.5px 0 currentColor;">');
             html = html.replace(/<\/b>/gi, '</strong>');
             html = html.replace(/<i>/gi, '<em style="font-style: italic;">');
             html = html.replace(/<\/i>/gi, '</em>');
@@ -2259,8 +2368,13 @@
             html = html.replace(/<sup>/gi, '<sup>');
             html = html.replace(/<\/sup>/gi, '</sup>');
             
-            // 7. Handle rotate tag
-            html = html.replace(/<rotate=(\d+)>/gi, '<span style="display: inline-block; transform: rotate($1deg);">');
+            // 7. Handle rotate tag - match Unity's rotation behavior
+            // Unity rotates counter-clockwise (positive = left), CSS rotates clockwise (positive = right)
+            // So we need to negate the value to match Unity's direction
+            html = html.replace(/<rotate=(\d+)>/gi, (match, degrees) => {
+                const negatedDegrees = -parseInt(degrees);
+                return `<span style="display: inline-block; transform: rotate(${negatedDegrees}deg); transform-origin: 50% 50%; vertical-align: baseline; line-height: 1.2;">`;
+            });
             html = html.replace(/<\/rotate>/gi, '</span>');
             
             messageInput.innerHTML = html;
