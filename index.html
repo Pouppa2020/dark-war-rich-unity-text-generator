@@ -1685,10 +1685,12 @@
         
         <form id="textForm" onsubmit="return false;">
             <div class="section section-always-open">
-                <h3>Message</h3>
                 <div class="section-content">
                     <div id="preview" contenteditable="true" data-placeholder="Input your message"></div>
-                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <div style="margin-top: 8px; font-size: 12px; color: #999; font-style: italic; text-align: center;">
+                        Note: Preview is approximate and may not match in-game appearance exactly
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 12px;">
                         <button type="button" class="gradient-btn" id="resetBtn" style="flex: 1;">Reset</button>
                     </div>
                 </div>
@@ -2145,30 +2147,8 @@
                 if (align === 'right') alignRightBtn.classList.add('active');
             }
 
-            // Regenerate code if there's already a result
-            if (resultTextarea.value) {
-                const hasGradient = resultTextarea.value.includes('<color=#') && 
-                    resultTextarea.value.split('<color=').length > 2;
-                
-                if (hasGradient) {
-                    const lastGradient = localStorage.getItem('lastGradient') || 'Rainbow';
-                    if (lastGradient === 'custom') {
-                        const code = generateCustomGradient();
-                        if (code) {
-                            resultTextarea.value = code;
-                    updatePreview(code);
-                        }
-                    } else if (gradients[lastGradient]) {
-                        const code = generateGradient(lastGradient);
-                        resultTextarea.value = code;
-                    updatePreview(code);
-                    }
-                } else {
-                    const code = generateSolidColor();
-                    resultTextarea.value = code;
-                    updatePreview(code);
-                }
-            }
+            // Generate code if there's text in the message box
+            if (messageInput.textContent) generateAndUpdate();
         }
 
         alignLeftBtn.addEventListener('click', () => setAlignment('left'));
@@ -2220,9 +2200,12 @@
             // Convert Unity Rich Text to HTML by processing tags in order
             let html = code;
             
-            // 1. Handle alignment
+            // 1. Handle alignment (no closing tag, wraps entire content)
             html = html.replace(/<align=(left|center|right)>/gi, '<div style="text-align: $1; width: 100%;">');
-            html = html.replace(/<\/align>/gi, '</div>');
+            // Add closing div at the end if alignment tag exists
+            if (/<div style="text-align:/.test(html)) {
+                html += '</div>';
+            }
             
             // 2. Handle mark (background)
             html = html.replace(/<mark=#([0-9A-F]{8})>/gi, (match, hex) => {
@@ -3533,9 +3516,9 @@
                 result += `<color=${hexColor}>${charResult}</color>`;
             });
 
-            // Wrap entire result with alignment if needed (outside all color tags)
+            // Apply alignment last (no closing tag needed)
             if (state.alignment) {
-                result = `<align=${state.alignment}>${result}</align>`;
+                result = `<align=${state.alignment}>${result}`;
             }
 
             return result;
@@ -4079,7 +4062,7 @@
             let result = text;
             const hexColor = rgbToHex(state.red, state.green, state.blue);
 
-            // Apply rotation first (per character)
+            // Apply rotation (per character)
             if (state.rotationMode && state.rotationMode !== '') {
                 result = applyRotation(result);
             }
@@ -4103,9 +4086,9 @@
             // Apply color
             result = `<color=${hexColor}>${result}</color>`;
 
-            // Wrap with alignment if needed (outside color tag for consistency)
+            // Apply alignment last (no closing tag needed)
             if (state.alignment) {
-                result = `<align=${state.alignment}>${result}</align>`;
+                result = `<align=${state.alignment}>${result}`;
             }
 
             return result;
@@ -4168,9 +4151,9 @@
                 result += `<color=${hexColor}>${charResult}</color>`;
             });
 
-            // Wrap entire result with alignment if needed (outside all color tags)
+            // Apply alignment last (no closing tag needed)
             if (state.alignment) {
-                result = `<align=${state.alignment}>${result}</align>`;
+                result = `<align=${state.alignment}>${result}`;
             }
 
             return result;
